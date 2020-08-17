@@ -1,5 +1,5 @@
 import { Overlay } from './Overlay';
-export declare class OverlayBox {
+export declare class BoxOverlay {
     overlay: Overlay;
     constructor(handleUpdate?: (rect: DOMRect | null) => void);
     private handleUpdate;

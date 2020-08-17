@@ -1,6 +1,6 @@
 import { Overlay } from './Overlay'
 
-export class OverlayBox {
+export class BoxOverlay {
   public overlay = new Overlay()
 
   constructor(handleUpdate = (rect:DOMRect|null) => {}) {
@@ -47,7 +47,7 @@ export class OverlayBox {
         )
       }
 
-      return findedElement
+      return Array.from(findedElement)
     }
   
     return [selectorOrElement]

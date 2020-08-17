@@ -5,7 +5,7 @@ export default {
   plugins: [
     typescript({
       lib: ["es5", "es6", "dom"],
-      target: "es5",
+      target: "es6",
       declaration: true,
       declarationDir: 'types/',
       rootDir: 'src/'

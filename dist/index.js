@@ -1,41 +1,3 @@
-/*! *****************************************************************************
-Copyright (c) Microsoft Corporation.
-
-Permission to use, copy, modify, and/or distribute this software for any
-purpose with or without fee is hereby granted.
-
-THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
-REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
-AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
-INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
-LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
-OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-PERFORMANCE OF THIS SOFTWARE.
-***************************************************************************** */
-
-function __read(o, n) {
-    var m = typeof Symbol === "function" && o[Symbol.iterator];
-    if (!m) return o;
-    var i = m.call(o), r, ar = [], e;
-    try {
-        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
-    }
-    catch (error) { e = { error: error }; }
-    finally {
-        try {
-            if (r && !r.done && (m = i["return"])) m.call(i);
-        }
-        finally { if (e) throw e.error; }
-    }
-    return ar;
-}
-
-function __spread() {
-    for (var ar = [], i = 0; i < arguments.length; i++)
-        ar = ar.concat(__read(arguments[i]));
-    return ar;
-}
-
 function hasChild(parent, el) {
     var child = parent && parent.firstChild;
     while (child) {
@@ -47,8 +9,8 @@ function hasChild(parent, el) {
     return false;
 }
 
-var Overlay = /** @class */ (function () {
-    function Overlay() {
+class Overlay {
+    constructor() {
         this.element = document.createElement('div');
         this.style = {
             color: 'rgba(0,0,0,.5)',
@@ -61,111 +23,98 @@ var Overlay = /** @class */ (function () {
         this.element.style.pointerEvents = 'none';
         this.applyStyle();
     }
-    Object.defineProperty(Overlay.prototype, "color", {
-        get: function () {
-            return this.style.color;
-        },
-        set: function (color) {
-            var _this = this;
-            this.style.color = color;
-            requestAnimationFrame(function () {
-                _this.applyStyle();
-            });
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(Overlay.prototype, "borderRadius", {
-        get: function () {
-            return this.style.borderRadius;
-        },
-        set: function (radius) {
-            var _this = this;
-            this.style.borderRadius = radius;
-            requestAnimationFrame(function () {
-                _this.applyStyle();
-            });
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Overlay.prototype.getElement = function () {
+    set color(color) {
+        this.style.color = color;
+        requestAnimationFrame(() => {
+            this.applyStyle();
+        });
+    }
+    get color() {
+        return this.style.color;
+    }
+    get borderRadius() {
+        return this.style.borderRadius;
+    }
+    set borderRadius(radius) {
+        this.style.borderRadius = radius;
+        requestAnimationFrame(() => {
+            this.applyStyle();
+        });
+    }
+    getElement() {
         return this.element;
-    };
-    Overlay.prototype.setRect = function (rect) {
+    }
+    setRect(rect) {
         if (rect) {
             this.mount();
-            this.element.style.transform = "translate(" + rect.x + "px, " + rect.y + "px)";
-            this.element.style.width = rect.width + "px";
-            this.element.style.height = rect.height + "px";
+            this.element.style.transform = `translate(${rect.x}px, ${rect.y}px)`;
+            this.element.style.width = `${rect.width}px`;
+            this.element.style.height = `${rect.height}px`;
         }
         else {
             this.destroy();
         }
-    };
-    Overlay.prototype.mount = function () {
+    }
+    mount() {
         if (!hasChild(document.body, this.element)) {
             document.body.appendChild(this.element);
         }
-    };
-    Overlay.prototype.destroy = function () {
+    }
+    destroy() {
         if (hasChild(document.body, this.element)) {
             document.body.removeChild(this.element);
         }
-    };
-    Overlay.prototype.applyStyle = function () {
-        this.element.style.setProperty('box-shadow', "0 0 0 20000px " + this.style.color);
-        this.element.style.setProperty('border-radius', this.style.borderRadius + "px");
-        this.element.style.setProperty('z-index', "" + this.style.zIndex);
-    };
-    return Overlay;
-}());
+    }
+    applyStyle() {
+        this.element.style.setProperty('box-shadow', `0 0 0 20000px ${this.style.color}`);
+        this.element.style.setProperty('border-radius', `${this.style.borderRadius}px`);
+        this.element.style.setProperty('z-index', `${this.style.zIndex}`);
+    }
+}
 
-var OverlayBox = /** @class */ (function () {
-    function OverlayBox(handleUpdate) {
-        if (handleUpdate === void 0) { handleUpdate = function (rect) { }; }
+class BoxOverlay {
+    constructor(handleUpdate = (rect) => { }) {
         this.overlay = new Overlay();
         this.elements = [];
         this.rect = null;
         this.requestAnimationFrameId = -1;
         this.handleUpdate = handleUpdate;
     }
-    OverlayBox.prototype.add = function (selectorOrElement) {
-        var _a;
+    add(selectorOrElement) {
         try {
-            var elements = this.getElements(selectorOrElement);
-            (_a = this.elements).push.apply(_a, __spread(elements));
+            const elements = this.getElements(selectorOrElement);
+            this.elements.push(...elements);
         }
         catch (error) {
             console.error(error);
         }
-    };
-    OverlayBox.prototype.remove = function (selectorOrElement) {
+    }
+    remove(selectorOrElement) {
         if (typeof selectorOrElement === 'string') {
-            this.elements = this.elements.filter(function (item) { return !item.matches(selectorOrElement); });
+            this.elements = this.elements.filter(item => !item.matches(selectorOrElement));
         }
         else {
-            this.elements = this.elements.filter(function (item) { return item !== selectorOrElement; });
+            this.elements = this.elements.filter(item => item !== selectorOrElement);
         }
-    };
-    OverlayBox.prototype.clear = function () {
+    }
+    clear() {
         this.elements = [];
-    };
-    OverlayBox.prototype.getElements = function (selectorOrElement) {
+    }
+    getElements(selectorOrElement) {
         if (typeof selectorOrElement === 'string') {
-            var findedElement = document.querySelectorAll(selectorOrElement);
+            const findedElement = document.querySelectorAll(selectorOrElement);
             if (!findedElement) {
-                throw new Error("Can not find element by selector " + selectorOrElement);
+                throw new Error(`Can not find element by selector ${selectorOrElement}`);
             }
-            return findedElement;
+            return Array.from(findedElement);
         }
         return [selectorOrElement];
-    };
-    OverlayBox.prototype.getPosition = function (element) {
-        var domRect = element.getBoundingClientRect();
+    }
+    getPosition(element) {
+        const domRect = element.getBoundingClientRect();
         return domRect;
-    };
-    OverlayBox.prototype.calcBox = function () {
+    }
+    calcBox() {
         if (this.elements.length === 0) {
             this.rect = null;
             return;
@@ -179,10 +128,10 @@ var OverlayBox = /** @class */ (function () {
             this.rect.width = 0;
             this.rect.height = 0;
         }
-        var boxRect = this.rect;
-        var bottom = 0;
-        var right = 0;
-        this.elements.map(this.getPosition).forEach(function (elRect) {
+        const boxRect = this.rect;
+        let bottom = 0;
+        let right = 0;
+        this.elements.map(this.getPosition).forEach((elRect) => {
             boxRect.x = Math.min(elRect.x, boxRect.x);
             boxRect.y = Math.min(elRect.y, boxRect.y);
             right = Math.max(elRect.x + elRect.width, right);
@@ -190,25 +139,23 @@ var OverlayBox = /** @class */ (function () {
         });
         boxRect.width = right - boxRect.x;
         boxRect.height = bottom - boxRect.y;
-    };
-    OverlayBox.prototype.start = function () {
+    }
+    start() {
         this.watch();
-    };
-    OverlayBox.prototype.stop = function () {
+    }
+    stop() {
         cancelAnimationFrame(this.requestAnimationFrameId);
         this.requestAnimationFrameId = -1;
         this.overlay.destroy();
-    };
-    OverlayBox.prototype.watch = function () {
-        var _this = this;
+    }
+    watch() {
         this.calcBox();
         this.handleUpdate(this.rect);
         this.overlay.setRect(this.rect);
-        this.requestAnimationFrameId = requestAnimationFrame(function () {
-            _this.watch();
+        this.requestAnimationFrameId = requestAnimationFrame(() => {
+            this.watch();
         });
-    };
-    return OverlayBox;
-}());
+    }
+}
 
-export { OverlayBox };
+export { BoxOverlay };

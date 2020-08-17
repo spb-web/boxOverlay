@@ -1,1 +1,1 @@
-export * from './OverlayBox';
+export * from './BoxOverlay';
