@@ -1,11 +1,10 @@
 {
-  "name": "onbording",
+  "name": "box-overlay",
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
     "build": "rollup --config rollup.config.js",
-    "postinstall": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

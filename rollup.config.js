@@ -11,11 +11,11 @@ export default {
   ],
   output: [
     {
-      file: './dist/webgl-circle-loader.js',
+      file: './dist/box-overlay.js',
       format: 'esm'
     },
     {
-      file: './dist/webgl-circle-loader.min.js',
+      file: './dist/box-overlay.min.js',
       format: 'esm',
       plugins: [ terser() ]
     }
