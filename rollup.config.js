@@ -1,5 +1,4 @@
-import typescript from 'rollup-plugin-typescript'
-import { terser } from 'rollup-plugin-terser'
+import typescript from '@rollup/plugin-typescript'
 
 export default {
   input: './src/index.ts',
@@ -7,17 +6,16 @@ export default {
     typescript({
       lib: ["es5", "es6", "dom"],
       target: "es5",
+      declaration: true,
+      declarationDir: 'types/',
+      rootDir: 'src/'
     })
   ],
   output: [
     {
-      file: './dist/box-overlay.js',
+      dir: '.',
+      entryFileNames: 'dist/index.js',
       format: 'esm'
     },
-    {
-      file: './dist/box-overlay.min.js',
-      format: 'esm',
-      plugins: [ terser() ]
-    }
   ]
 }
