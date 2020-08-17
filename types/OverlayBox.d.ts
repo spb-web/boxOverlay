@@ -1,5 +1,6 @@
+import { Overlay } from './Overlay';
 export declare class OverlayBox {
-    private overlay;
+    overlay: Overlay;
     constructor(handleUpdate?: (rect: DOMRect | null) => void);
     private handleUpdate;
     private elements;

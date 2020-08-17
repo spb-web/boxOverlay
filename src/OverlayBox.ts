@@ -1,7 +1,7 @@
 import { Overlay } from './Overlay'
 
 export class OverlayBox {
-  private overlay = new Overlay()
+  public overlay = new Overlay()
 
   constructor(handleUpdate = (rect:DOMRect|null) => {}) {
     this.handleUpdate = handleUpdate
