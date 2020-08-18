@@ -1,4 +1,4 @@
-function hasChild(parent, el) {
+const hasChild = (parent, el) => {
     var child = parent && parent.firstChild;
     while (child) {
         if (child === el) {
@@ -7,20 +7,39 @@ function hasChild(parent, el) {
         child = child.nextSibling;
     }
     return false;
-}
+};
+const applyStyle = (element, styles) => {
+    Object.entries(styles).forEach(([key, value]) => {
+        element.style[key] = value;
+    });
+};
+const setDefaultOverlayStyles = (element) => {
+    applyStyle(element, {
+        position: `fixed`,
+        left: '0',
+        top: '0',
+    });
+};
 
 class Overlay {
     constructor() {
         this.element = document.createElement('div');
+        this.disableEventsElement = document.createElement('div');
         this.style = {
             color: 'rgba(0,0,0,.5)',
             borderRadius: 5,
             zIndex: 10000,
         };
-        this.element.style.position = 'fixed';
-        this.element.style.left = '0';
-        this.element.style.top = '0';
-        this.element.style.pointerEvents = 'none';
+        const { element, disableEventsElement } = this;
+        setDefaultOverlayStyles(element);
+        applyStyle(element, {
+            pointerEvents: 'none',
+        });
+        setDefaultOverlayStyles(disableEventsElement);
+        applyStyle(disableEventsElement, {
+            right: '0',
+            bottom: '0',
+        });
         this.applyStyle();
     }
     set color(color) {
@@ -41,34 +60,71 @@ class Overlay {
             this.applyStyle();
         });
     }
+    get zIndex() {
+        return this.style.zIndex;
+    }
+    set zIndex(zIndex) {
+        this.style.zIndex = zIndex;
+        requestAnimationFrame(() => {
+            this.applyStyle();
+        });
+    }
     getElement() {
         return this.element;
     }
     setRect(rect) {
         if (rect) {
             this.mount();
-            this.element.style.transform = `translate(${rect.x}px, ${rect.y}px)`;
-            this.element.style.width = `${rect.width}px`;
-            this.element.style.height = `${rect.height}px`;
+            applyStyle(this.element, {
+                transform: `translate(${rect.x}px, ${rect.y}px)`,
+                width: `${rect.width}px`,
+                height: `${rect.height}px`
+            });
+            applyStyle(this.disableEventsElement, {
+                clipPath: 'polygon(0% 0%, 0 100%,'
+                    + `${rect.x}px 100%,`
+                    + `${rect.x}px ${rect.y}px,`
+                    + `${rect.x + rect.width}px ${rect.y}px,`
+                    + `${rect.x + rect.width}px ${rect.y + rect.height}px,`
+                    + `${rect.x}px ${rect.y + rect.height}px,`
+                    + `${rect.x}px 100%,`
+                    + '100% 100%, 100% 0%)',
+            });
         }
         else {
             this.destroy();
         }
     }
     mount() {
-        if (!hasChild(document.body, this.element)) {
-            document.body.appendChild(this.element);
+        const { element, disableEventsElement } = this;
+        const { body } = document;
+        if (!hasChild(body, element)) {
+            body.appendChild(element);
+        }
+        if (!hasChild(body, disableEventsElement)) {
+            body.appendChild(disableEventsElement);
         }
     }
     destroy() {
-        if (hasChild(document.body, this.element)) {
-            document.body.removeChild(this.element);
+        const { element, disableEventsElement } = this;
+        const { body } = document;
+        if (hasChild(body, element)) {
+            body.removeChild(element);
+        }
+        if (hasChild(body, disableEventsElement)) {
+            body.removeChild(disableEventsElement);
         }
     }
     applyStyle() {
-        this.element.style.setProperty('box-shadow', `0 0 0 20000px ${this.style.color}`);
-        this.element.style.setProperty('border-radius', `${this.style.borderRadius}px`);
-        this.element.style.setProperty('z-index', `${this.style.zIndex}`);
+        const { element, style } = this;
+        applyStyle(element, {
+            boxShadow: `0 0 0 40000px ${style.color}`,
+            borderRadius: `${style.borderRadius}px`,
+            zIndex: `${style.zIndex}`,
+        });
+        applyStyle(element, {
+            zIndex: `${style.zIndex + 1}`,
+        });
     }
 }
 
@@ -114,6 +170,22 @@ class BoxOverlay {
         const domRect = element.getBoundingClientRect();
         return domRect;
     }
+    start() {
+        this.watch();
+    }
+    stop() {
+        cancelAnimationFrame(this.requestAnimationFrameId);
+        this.requestAnimationFrameId = -1;
+        this.overlay.destroy();
+    }
+    watch() {
+        this.calcBox();
+        this.handleUpdate(this.rect);
+        this.overlay.setRect(this.rect);
+        this.requestAnimationFrameId = requestAnimationFrame(() => {
+            this.watch();
+        });
+    }
     calcBox() {
         if (this.elements.length === 0) {
             this.rect = null;
@@ -139,22 +211,6 @@ class BoxOverlay {
         });
         boxRect.width = right - boxRect.x;
         boxRect.height = bottom - boxRect.y;
-    }
-    start() {
-        this.watch();
-    }
-    stop() {
-        cancelAnimationFrame(this.requestAnimationFrameId);
-        this.requestAnimationFrameId = -1;
-        this.overlay.destroy();
-    }
-    watch() {
-        this.calcBox();
-        this.handleUpdate(this.rect);
-        this.overlay.setRect(this.rect);
-        this.requestAnimationFrameId = requestAnimationFrame(() => {
-            this.watch();
-        });
     }
 }
 

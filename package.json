@@ -1,12 +1,13 @@
 {
   "name": "box-overlay",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "",
   "main": "dist/index.js",
   "typings": "types/index",
   "scripts": {
     "build": "rollup --config rollup.config.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build-demo": "rollup --config rollup.demo.config.js"
   },
   "author": "",
   "license": "ISC",

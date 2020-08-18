@@ -4,11 +4,12 @@ export default {
   input: './src/index.ts',
   plugins: [
     typescript({
-      lib: ["es5", "es6", "dom"],
+      lib: ["es2017.object", "es6", "dom"],
       target: "es6",
       declaration: true,
       declarationDir: 'types/',
-      rootDir: 'src/'
+      rootDir: 'src/',
+      exclude: 'demo/**/*.ts'
     })
   ],
   output: [

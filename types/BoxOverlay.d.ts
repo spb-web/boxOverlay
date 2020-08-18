@@ -11,8 +11,8 @@ export declare class BoxOverlay {
     clear(): void;
     private getElements;
     private getPosition;
-    private calcBox;
     start(): void;
     stop(): void;
     private watch;
+    private calcBox;
 }

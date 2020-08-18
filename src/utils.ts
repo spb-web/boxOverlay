@@ -1,4 +1,4 @@
-export function hasChild(parent:Element, el:Element){
+export const hasChild = (parent:Element, el:Element) => {
   var child = parent && parent.firstChild;
   
   while (child) {
@@ -10,4 +10,21 @@ export function hasChild(parent:Element, el:Element){
   }
 
   return false;
+}
+
+export const applyStyle = <T extends Partial<CSSStyleDeclaration>>(
+  element:HTMLElement,
+  styles:T,
+) => {
+  Object.entries(styles).forEach(([key, value]:any[]) => {
+    element.style[key] = value
+  })
+}
+
+export const setDefaultOverlayStyles = (element:HTMLElement) => {
+  applyStyle(element, {
+    position: `fixed`,
+    left: '0',
+    top: '0',
+  })
 }

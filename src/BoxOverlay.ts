@@ -59,6 +59,28 @@ export class BoxOverlay {
     return domRect
   }
 
+  public start() {
+    this.watch()
+  }
+
+  public stop() {
+    cancelAnimationFrame(this.requestAnimationFrameId)
+
+    this.requestAnimationFrameId = -1
+
+    this.overlay.destroy()
+  }
+
+  private watch() {
+    this.calcBox()
+    this.handleUpdate(this.rect)
+    this.overlay.setRect(this.rect)
+
+    this.requestAnimationFrameId = requestAnimationFrame(() => {
+      this.watch()
+    })
+  }
+
   private calcBox() {
     if (this.elements.length === 0) {
       this.rect = null
@@ -94,27 +116,5 @@ export class BoxOverlay {
 
     boxRect.width = right - boxRect.x
     boxRect.height = bottom - boxRect.y
-  }
-
-  public start() {
-    this.watch()
-  }
-
-  public stop() {
-    cancelAnimationFrame(this.requestAnimationFrameId)
-
-    this.requestAnimationFrameId = -1
-
-    this.overlay.destroy()
-  }
-
-  private watch() {
-    this.calcBox()
-    this.handleUpdate(this.rect)
-    this.overlay.setRect(this.rect)
-
-    this.requestAnimationFrameId = requestAnimationFrame(() => {
-      this.watch()
-    })
   }
 }
