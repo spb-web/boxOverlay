@@ -131,40 +131,28 @@ class Overlay {
 class BoxOverlay {
     constructor(handleUpdate = (rect) => { }) {
         this.overlay = new Overlay();
-        this.elements = [];
+        this.elementsOrSelectors = [];
         this.rect = null;
         this.requestAnimationFrameId = -1;
         this.handleUpdate = handleUpdate;
     }
     add(selectorOrElement) {
-        try {
-            const elements = this.getElements(selectorOrElement);
-            this.elements.push(...elements);
-        }
-        catch (error) {
-            console.error(error);
-        }
-    }
-    remove(selectorOrElement) {
-        if (typeof selectorOrElement === 'string') {
-            this.elements = this.elements.filter(item => !item.matches(selectorOrElement));
-        }
-        else {
-            this.elements = this.elements.filter(item => item !== selectorOrElement);
-        }
+        this.elementsOrSelectors.push(selectorOrElement);
     }
     clear() {
-        this.elements = [];
+        this.elementsOrSelectors = [];
     }
-    getElements(selectorOrElement) {
-        if (typeof selectorOrElement === 'string') {
-            const findedElement = document.querySelectorAll(selectorOrElement);
-            if (!findedElement) {
-                throw new Error(`Can not find element by selector ${selectorOrElement}`);
+    getElements() {
+        return this.elementsOrSelectors.reduce((elements, selectorOrElement) => {
+            if (typeof selectorOrElement === 'string') {
+                const findedElement = document.querySelectorAll(selectorOrElement);
+                if (!findedElement) {
+                    throw new Error(`Can not find element by selector ${selectorOrElement}`);
+                }
+                return elements.concat(Array.from(findedElement));
             }
-            return Array.from(findedElement);
-        }
-        return [selectorOrElement];
+            return elements.concat([selectorOrElement]);
+        }, []);
     }
     getPosition(element) {
         const domRect = element.getBoundingClientRect();
@@ -187,7 +175,8 @@ class BoxOverlay {
         });
     }
     calcBox() {
-        if (this.elements.length === 0) {
+        const elements = this.getElements();
+        if (elements.length === 0) {
             this.rect = null;
             return;
         }
@@ -203,7 +192,7 @@ class BoxOverlay {
         const boxRect = this.rect;
         let bottom = 0;
         let right = 0;
-        this.elements.map(this.getPosition).forEach((elRect) => {
+        elements.map(this.getPosition).forEach((elRect) => {
             boxRect.x = Math.min(elRect.x, boxRect.x);
             boxRect.y = Math.min(elRect.y, boxRect.y);
             right = Math.max(elRect.x + elRect.width, right);

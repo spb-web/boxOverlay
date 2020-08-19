@@ -9,48 +9,36 @@ export class BoxOverlay {
 
   private handleUpdate:(rect:DOMRect|null) => void
 
-  private elements:Element[] = []
+  private elementsOrSelectors:(Element|string)[] = []
 
   private rect:DOMRect|null = null
 
   private requestAnimationFrameId:number = -1
 
   public add(selectorOrElement:Element|string) {
-    try {
-      const elements = this.getElements(selectorOrElement)
-
-      this.elements.push(...elements)
-    } catch (error) {
-      console.error(error)
-    }
-  }
-
-  public remove(selectorOrElement:Element|string) {
-    if (typeof selectorOrElement === 'string') {
-      this.elements = this.elements.filter(item => !item.matches(selectorOrElement))
-    } else {
-      this.elements = this.elements.filter(item => item !== selectorOrElement)
-    }
+    this.elementsOrSelectors.push(selectorOrElement)
   }
 
   public clear() {
-    this.elements = []
+    this.elementsOrSelectors = []
   }
 
-  private getElements(selectorOrElement:Element|string) {
-    if (typeof selectorOrElement === 'string') {
-      const findedElement = document.querySelectorAll(selectorOrElement)
-
-      if (!findedElement) {
-        throw new Error(
-          `Can not find element by selector ${selectorOrElement}`
-        )
-      }
-
-      return Array.from(findedElement)
-    }
+  private getElements() {
+    return this.elementsOrSelectors.reduce((elements, selectorOrElement) => {
+      if (typeof selectorOrElement === 'string') {
+        const findedElement = document.querySelectorAll(selectorOrElement)
   
-    return [selectorOrElement]
+        if (!findedElement) {
+          throw new Error(
+            `Can not find element by selector ${selectorOrElement}`
+          )
+        }
+  
+        return elements.concat(Array.from(findedElement))
+      }
+    
+      return elements.concat([selectorOrElement])
+    }, [] as Element[])
   }
 
   private getPosition(element:Element) {
@@ -82,7 +70,9 @@ export class BoxOverlay {
   }
 
   private calcBox() {
-    if (this.elements.length === 0) {
+    const elements = this.getElements()
+
+    if (elements.length === 0) {
       this.rect = null
 
       return
@@ -107,7 +97,7 @@ export class BoxOverlay {
     let bottom = 0
     let right = 0
     
-    this.elements.map(this.getPosition).forEach((elRect) => {
+    elements.map(this.getPosition).forEach((elRect) => {
       boxRect.x = Math.min(elRect.x, boxRect.x)
       boxRect.y = Math.min(elRect.y, boxRect.y)
       right = Math.max(elRect.x + elRect.width, right)

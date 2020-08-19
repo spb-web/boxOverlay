@@ -33,12 +33,6 @@
         return ar;
     }
 
-    function __spread() {
-        for (var ar = [], i = 0; i < arguments.length; i++)
-            ar = ar.concat(__read(arguments[i]));
-        return ar;
-    }
-
     var hasChild = function (parent, el) {
         var child = parent && parent.firstChild;
         while (child) {
@@ -190,41 +184,28 @@
         function BoxOverlay(handleUpdate) {
             if (handleUpdate === void 0) { handleUpdate = function (rect) { }; }
             this.overlay = new Overlay();
-            this.elements = [];
+            this.elementsOrSelectors = [];
             this.rect = null;
             this.requestAnimationFrameId = -1;
             this.handleUpdate = handleUpdate;
         }
         BoxOverlay.prototype.add = function (selectorOrElement) {
-            var _a;
-            try {
-                var elements = this.getElements(selectorOrElement);
-                (_a = this.elements).push.apply(_a, __spread(elements));
-            }
-            catch (error) {
-                console.error(error);
-            }
-        };
-        BoxOverlay.prototype.remove = function (selectorOrElement) {
-            if (typeof selectorOrElement === 'string') {
-                this.elements = this.elements.filter(function (item) { return !item.matches(selectorOrElement); });
-            }
-            else {
-                this.elements = this.elements.filter(function (item) { return item !== selectorOrElement; });
-            }
+            this.elementsOrSelectors.push(selectorOrElement);
         };
         BoxOverlay.prototype.clear = function () {
-            this.elements = [];
+            this.elementsOrSelectors = [];
         };
-        BoxOverlay.prototype.getElements = function (selectorOrElement) {
-            if (typeof selectorOrElement === 'string') {
-                var findedElement = document.querySelectorAll(selectorOrElement);
-                if (!findedElement) {
-                    throw new Error("Can not find element by selector " + selectorOrElement);
+        BoxOverlay.prototype.getElements = function () {
+            return this.elementsOrSelectors.reduce(function (elements, selectorOrElement) {
+                if (typeof selectorOrElement === 'string') {
+                    var findedElement = document.querySelectorAll(selectorOrElement);
+                    if (!findedElement) {
+                        throw new Error("Can not find element by selector " + selectorOrElement);
+                    }
+                    return elements.concat(Array.from(findedElement));
                 }
-                return Array.from(findedElement);
-            }
-            return [selectorOrElement];
+                return elements.concat([selectorOrElement]);
+            }, []);
         };
         BoxOverlay.prototype.getPosition = function (element) {
             var domRect = element.getBoundingClientRect();
@@ -248,7 +229,8 @@
             });
         };
         BoxOverlay.prototype.calcBox = function () {
-            if (this.elements.length === 0) {
+            var elements = this.getElements();
+            if (elements.length === 0) {
                 this.rect = null;
                 return;
             }
@@ -264,7 +246,7 @@
             var boxRect = this.rect;
             var bottom = 0;
             var right = 0;
-            this.elements.map(this.getPosition).forEach(function (elRect) {
+            elements.map(this.getPosition).forEach(function (elRect) {
                 boxRect.x = Math.min(elRect.x, boxRect.x);
                 boxRect.y = Math.min(elRect.y, boxRect.y);
                 right = Math.max(elRect.x + elRect.width, right);
