@@ -1,11 +1,30 @@
 import { hasChild, setDefaultOverlayStyles, applyStyle } from './utils'
 
+const disableMouseEvents = (event:Event) => {
+  event.stopPropagation()
+}
+
+const EVENTS_LIST:(keyof GlobalEventHandlersEventMap)[] = [
+  'click',
+  'mousedown',
+  'mouseenter',
+  'mouseleave',
+  'mousemove',
+  'mouseout',
+  'mouseover',
+  'mouseup',
+  'touchcancel',
+  'touchend',
+  'touchmove',
+  'touchstart',
+]
+
 export class Overlay {
   private element = document.createElement('div')
   private disableEventsElement = document.createElement('div')
-  private option = {
-    disableEvents: false,
-  }
+  // private option = {
+  //   disableEvents: false,
+  // }
 
   constructor() {
     const { element, disableEventsElement } = this
@@ -19,19 +38,22 @@ export class Overlay {
       }
     )
     setDefaultOverlayStyles(disableEventsElement)
-    applyStyle(
-      disableEventsElement, 
-      {
-        right: '0',
-        bottom: '0',
-        willСhange: 'clip-path',
-      }
-    )
+    // applyStyle(
+    //   disableEventsElement, 
+    //   {
+    //     right: '0',
+    //     bottom: '0',
+    //     willСhange: 'clip-path',
+    //   }
+    // )
 
-    disableEventsElement.onclick = (event) => {
-      event.preventDefault()
-      event.stopPropagation()
-    }
+    EVENTS_LIST.forEach(eventName => {
+      disableEventsElement.addEventListener(
+        eventName,
+        disableMouseEvents,
+        { passive: true },
+      )
+    })
 
     this.applyStyle()
   }
@@ -42,13 +64,13 @@ export class Overlay {
     zIndex: 10000,
   }
 
-  set disableEvents(bool:boolean) {
-    this.option.disableEvents = bool
-  }
+  // set disableEvents(bool:boolean) {
+  //   this.option.disableEvents = bool
+  // }
 
-  get disableEvents() {
-    return this.option.disableEvents
-  }
+  // get disableEvents() {
+  //   return this.option.disableEvents
+  // }
 
   set color(color:string) {
     this.style.color = color
@@ -100,23 +122,21 @@ export class Overlay {
         height: `${rect.height}px`
       })
 
-      const clipPath = this.disableEvents 
-        ? 'none'
-        : (
-          'polygon(0% 0%, 0 100%,'
-          + `${rect.x}px 100%,`
-          + `${rect.x}px ${rect.y}px,`
-          + `${rect.x + rect.width}px ${rect.y}px,`
-          + `${rect.x + rect.width}px ${rect.y + rect.height}px,`
-          + `${rect.x}px ${rect.y + rect.height}px,`
-          + `${rect.x}px 100%,`
-          + '100% 100%, 100% 0%)'
-        )
+      // const clipPath = this.disableEvents 
+      //   ? 'none'
+      //   : 'polygon(0% 0%, 0 100%,'
+      //     + `${rect.x}px 100%,`
+      //     + `${rect.x}px ${rect.y}px,`
+      //     + `${rect.x + rect.width}px ${rect.y}px,`
+      //     + `${rect.x + rect.width}px ${rect.y + rect.height}px,`
+      //     + `${rect.x}px ${rect.y + rect.height}px,`
+      //     + `${rect.x}px 100%,`
+      //     + '100% 100%, 100% 0%)'
 
-      applyStyle(
-        this.disableEventsElement, 
-        { clipPath: clipPath, },
-      )
+      // applyStyle(
+      //   this.disableEventsElement, 
+      //   { clipPath: clipPath, },
+      // )
     } else {
       this.destroy()
     }

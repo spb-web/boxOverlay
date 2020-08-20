@@ -1,6 +1,8 @@
 import { Overlay } from './Overlay'
 import { isEqualDOMRect } from './utils'
 
+const { MAX_SAFE_INTEGER } = Number
+
 export class BoxOverlay {
   public overlay = new Overlay()
 
@@ -98,8 +100,8 @@ export class BoxOverlay {
       return null
     }
 
-    let x = Number.MAX_SAFE_INTEGER
-    let y = Number.MAX_SAFE_INTEGER
+    let x = MAX_SAFE_INTEGER
+    let y = MAX_SAFE_INTEGER
     let width = 0
     let height = 0
     let bottom = 0

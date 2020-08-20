@@ -28,13 +28,30 @@ const isEqualDOMRect = (firstDOMRect, secondDOMRect) => ((firstDOMRect === null 
             && firstDOMRect.width === secondDOMRect.width
             && firstDOMRect.height === secondDOMRect.height)));
 
+const disableMouseEvents = (event) => {
+    event.stopPropagation();
+};
+const EVENTS_LIST = [
+    'click',
+    'mousedown',
+    'mouseenter',
+    'mouseleave',
+    'mousemove',
+    'mouseout',
+    'mouseover',
+    'mouseup',
+    'touchcancel',
+    'touchend',
+    'touchmove',
+    'touchstart',
+];
 class Overlay {
+    // private option = {
+    //   disableEvents: false,
+    // }
     constructor() {
         this.element = document.createElement('div');
         this.disableEventsElement = document.createElement('div');
-        this.option = {
-            disableEvents: false,
-        };
         this.style = {
             color: 'rgba(0,0,0,.5)',
             borderRadius: 5,
@@ -47,23 +64,25 @@ class Overlay {
             willСhange: 'transform, width, height',
         });
         setDefaultOverlayStyles(disableEventsElement);
-        applyStyle(disableEventsElement, {
-            right: '0',
-            bottom: '0',
-            willСhange: 'clip-path',
+        // applyStyle(
+        //   disableEventsElement, 
+        //   {
+        //     right: '0',
+        //     bottom: '0',
+        //     willСhange: 'clip-path',
+        //   }
+        // )
+        EVENTS_LIST.forEach(eventName => {
+            disableEventsElement.addEventListener(eventName, disableMouseEvents, { passive: true });
         });
-        disableEventsElement.onclick = (event) => {
-            event.preventDefault();
-            event.stopPropagation();
-        };
         this.applyStyle();
     }
-    set disableEvents(bool) {
-        this.option.disableEvents = bool;
-    }
-    get disableEvents() {
-        return this.option.disableEvents;
-    }
+    // set disableEvents(bool:boolean) {
+    //   this.option.disableEvents = bool
+    // }
+    // get disableEvents() {
+    //   return this.option.disableEvents
+    // }
     set color(color) {
         this.style.color = color;
         requestAnimationFrame(() => {
@@ -102,17 +121,20 @@ class Overlay {
                 width: `${rect.width}px`,
                 height: `${rect.height}px`
             });
-            const clipPath = this.disableEvents
-                ? 'none'
-                : ('polygon(0% 0%, 0 100%,'
-                    + `${rect.x}px 100%,`
-                    + `${rect.x}px ${rect.y}px,`
-                    + `${rect.x + rect.width}px ${rect.y}px,`
-                    + `${rect.x + rect.width}px ${rect.y + rect.height}px,`
-                    + `${rect.x}px ${rect.y + rect.height}px,`
-                    + `${rect.x}px 100%,`
-                    + '100% 100%, 100% 0%)');
-            applyStyle(this.disableEventsElement, { clipPath: clipPath, });
+            // const clipPath = this.disableEvents 
+            //   ? 'none'
+            //   : 'polygon(0% 0%, 0 100%,'
+            //     + `${rect.x}px 100%,`
+            //     + `${rect.x}px ${rect.y}px,`
+            //     + `${rect.x + rect.width}px ${rect.y}px,`
+            //     + `${rect.x + rect.width}px ${rect.y + rect.height}px,`
+            //     + `${rect.x}px ${rect.y + rect.height}px,`
+            //     + `${rect.x}px 100%,`
+            //     + '100% 100%, 100% 0%)'
+            // applyStyle(
+            //   this.disableEventsElement, 
+            //   { clipPath: clipPath, },
+            // )
         }
         else {
             this.destroy();
@@ -151,6 +173,7 @@ class Overlay {
     }
 }
 
+const { MAX_SAFE_INTEGER } = Number;
 class BoxOverlay {
     constructor(handleUpdate = (rect) => { }) {
         this.overlay = new Overlay();
@@ -218,8 +241,8 @@ class BoxOverlay {
         if (elements.length === 0) {
             return null;
         }
-        let x = Number.MAX_SAFE_INTEGER;
-        let y = Number.MAX_SAFE_INTEGER;
+        let x = MAX_SAFE_INTEGER;
+        let y = MAX_SAFE_INTEGER;
         let width = 0;
         let height = 0;
         let bottom = 0;

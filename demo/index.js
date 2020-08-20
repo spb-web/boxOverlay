@@ -64,13 +64,30 @@
                 && firstDOMRect.width === secondDOMRect.width
                 && firstDOMRect.height === secondDOMRect.height))); };
 
+    var disableMouseEvents = function (event) {
+        event.stopPropagation();
+    };
+    var EVENTS_LIST = [
+        'click',
+        'mousedown',
+        'mouseenter',
+        'mouseleave',
+        'mousemove',
+        'mouseout',
+        'mouseover',
+        'mouseup',
+        'touchcancel',
+        'touchend',
+        'touchmove',
+        'touchstart',
+    ];
     var Overlay = /** @class */ (function () {
+        // private option = {
+        //   disableEvents: false,
+        // }
         function Overlay() {
             this.element = document.createElement('div');
             this.disableEventsElement = document.createElement('div');
-            this.option = {
-                disableEvents: false,
-            };
             this.style = {
                 color: 'rgba(0,0,0,.5)',
                 borderRadius: 5,
@@ -83,31 +100,29 @@
                 willСhange: 'transform, width, height',
             });
             setDefaultOverlayStyles(disableEventsElement);
-            applyStyle(disableEventsElement, {
-                right: '0',
-                bottom: '0',
-                willСhange: 'clip-path',
+            // applyStyle(
+            //   disableEventsElement, 
+            //   {
+            //     right: '0',
+            //     bottom: '0',
+            //     willСhange: 'clip-path',
+            //   }
+            // )
+            EVENTS_LIST.forEach(function (eventName) {
+                disableEventsElement.addEventListener(eventName, disableMouseEvents, { passive: true });
             });
-            disableEventsElement.onclick = function (event) {
-                event.preventDefault();
-                event.stopPropagation();
-            };
             this.applyStyle();
         }
-        Object.defineProperty(Overlay.prototype, "disableEvents", {
-            get: function () {
-                return this.option.disableEvents;
-            },
-            set: function (bool) {
-                this.option.disableEvents = bool;
-            },
-            enumerable: false,
-            configurable: true
-        });
         Object.defineProperty(Overlay.prototype, "color", {
             get: function () {
                 return this.style.color;
             },
+            // set disableEvents(bool:boolean) {
+            //   this.option.disableEvents = bool
+            // }
+            // get disableEvents() {
+            //   return this.option.disableEvents
+            // }
             set: function (color) {
                 var _this = this;
                 this.style.color = color;
@@ -157,17 +172,20 @@
                     width: rect.width + "px",
                     height: rect.height + "px"
                 });
-                var clipPath = this.disableEvents
-                    ? 'none'
-                    : ('polygon(0% 0%, 0 100%,'
-                        + (rect.x + "px 100%,")
-                        + (rect.x + "px " + rect.y + "px,")
-                        + (rect.x + rect.width + "px " + rect.y + "px,")
-                        + (rect.x + rect.width + "px " + (rect.y + rect.height) + "px,")
-                        + (rect.x + "px " + (rect.y + rect.height) + "px,")
-                        + (rect.x + "px 100%,")
-                        + '100% 100%, 100% 0%)');
-                applyStyle(this.disableEventsElement, { clipPath: clipPath, });
+                // const clipPath = this.disableEvents 
+                //   ? 'none'
+                //   : 'polygon(0% 0%, 0 100%,'
+                //     + `${rect.x}px 100%,`
+                //     + `${rect.x}px ${rect.y}px,`
+                //     + `${rect.x + rect.width}px ${rect.y}px,`
+                //     + `${rect.x + rect.width}px ${rect.y + rect.height}px,`
+                //     + `${rect.x}px ${rect.y + rect.height}px,`
+                //     + `${rect.x}px 100%,`
+                //     + '100% 100%, 100% 0%)'
+                // applyStyle(
+                //   this.disableEventsElement, 
+                //   { clipPath: clipPath, },
+                // )
             }
             else {
                 this.destroy();
@@ -207,6 +225,7 @@
         return Overlay;
     }());
 
+    var MAX_SAFE_INTEGER = Number.MAX_SAFE_INTEGER;
     var BoxOverlay = /** @class */ (function () {
         function BoxOverlay(handleUpdate) {
             if (handleUpdate === void 0) { handleUpdate = function (rect) { }; }
@@ -276,8 +295,8 @@
             if (elements.length === 0) {
                 return null;
             }
-            var x = Number.MAX_SAFE_INTEGER;
-            var y = Number.MAX_SAFE_INTEGER;
+            var x = MAX_SAFE_INTEGER;
+            var y = MAX_SAFE_INTEGER;
             var width = 0;
             var height = 0;
             var bottom = 0;
