@@ -38,20 +38,20 @@ export class Overlay {
       }
     )
     setDefaultOverlayStyles(disableEventsElement)
-    // applyStyle(
-    //   disableEventsElement, 
-    //   {
-    //     right: '0',
-    //     bottom: '0',
-    //     willСhange: 'clip-path',
-    //   }
-    // )
+    applyStyle(
+      disableEventsElement, 
+      {
+        right: '0',
+        bottom: '0',
+        // willСhange: 'clip-path',
+      }
+    )
 
     EVENTS_LIST.forEach(eventName => {
       disableEventsElement.addEventListener(
         eventName,
         disableMouseEvents,
-        { passive: true },
+        { passive: true, capture: true },
       )
     })
 
@@ -169,14 +169,14 @@ export class Overlay {
   }
 
   private applyStyle() {
-    const { element, style } = this
+    const { style } = this
 
-    applyStyle(element, {
+    applyStyle(this.element, {
       boxShadow: `0 0 0 40000px ${style.color}`,
       borderRadius: `${style.borderRadius}px`,
       zIndex: `${style.zIndex}`,
     })
-    applyStyle(element, {
+    applyStyle(this.disableEventsElement, {
       zIndex: `${style.zIndex + 1}`,
     })
   }
