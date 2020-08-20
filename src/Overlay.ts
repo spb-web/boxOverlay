@@ -112,14 +112,18 @@ export class Overlay {
     return this.element
   }
 
-  public setRect(rect:DOMRect|null) {
+  public setRect(rect:DOMRect|null, callback = () => {}) {
     if (rect) {
       this.mount()
 
-      applyStyle(this.element, {
-        transform: `translate(${rect.x}px, ${rect.y}px)`,
-        width: `${rect.width}px`,
-        height: `${rect.height}px`
+      requestAnimationFrame(() => {
+        applyStyle(this.element, {
+          transform: `translate(${rect.x}px, ${rect.y}px)`,
+          width: `${rect.width}px`,
+          height: `${rect.height}px`
+        })
+
+        callback()
       })
 
       // const clipPath = this.disableEvents 
