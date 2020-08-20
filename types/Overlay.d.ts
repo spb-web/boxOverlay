@@ -1,8 +1,11 @@
 export declare class Overlay {
     private element;
     private disableEventsElement;
+    private option;
     constructor();
     private style;
+    set disableEvents(bool: boolean);
+    get disableEvents(): boolean;
     set color(color: string);
     get color(): string;
     get borderRadius(): number;

@@ -61,6 +61,9 @@
         function Overlay() {
             this.element = document.createElement('div');
             this.disableEventsElement = document.createElement('div');
+            this.option = {
+                disableEvents: true,
+            };
             this.style = {
                 color: 'rgba(0,0,0,.5)',
                 borderRadius: 5,
@@ -76,8 +79,22 @@
                 right: '0',
                 bottom: '0',
             });
+            disableEventsElement.onclick = function (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            };
             this.applyStyle();
         }
+        Object.defineProperty(Overlay.prototype, "disableEvents", {
+            get: function () {
+                return this.option.disableEvents;
+            },
+            set: function (bool) {
+                this.option.disableEvents = bool;
+            },
+            enumerable: false,
+            configurable: true
+        });
         Object.defineProperty(Overlay.prototype, "color", {
             get: function () {
                 return this.style.color;
@@ -131,16 +148,17 @@
                     width: rect.width + "px",
                     height: rect.height + "px"
                 });
-                applyStyle(this.disableEventsElement, {
-                    clipPath: 'polygon(0% 0%, 0 100%,'
+                var clipPath = this.disableEvents
+                    ? 'none'
+                    : ('polygon(0% 0%, 0 100%,'
                         + (rect.x + "px 100%,")
                         + (rect.x + "px " + rect.y + "px,")
                         + (rect.x + rect.width + "px " + rect.y + "px,")
                         + (rect.x + rect.width + "px " + (rect.y + rect.height) + "px,")
                         + (rect.x + "px " + (rect.y + rect.height) + "px,")
                         + (rect.x + "px 100%,")
-                        + '100% 100%, 100% 0%)',
-                });
+                        + '100% 100%, 100% 0%)');
+                applyStyle(this.disableEventsElement, { clipPath: clipPath, });
             }
             else {
                 this.destroy();
