@@ -4,7 +4,7 @@ export class Overlay {
   private element = document.createElement('div')
   private disableEventsElement = document.createElement('div')
   private option = {
-    disableEvents: true,
+    disableEvents: false,
   }
 
   constructor() {
@@ -15,6 +15,7 @@ export class Overlay {
       element, 
       {
         pointerEvents: 'none',
+        willСhange: 'transform, width, height',
       }
     )
     setDefaultOverlayStyles(disableEventsElement)
@@ -23,6 +24,7 @@ export class Overlay {
       {
         right: '0',
         bottom: '0',
+        willСhange: 'clip-path',
       }
     )
 

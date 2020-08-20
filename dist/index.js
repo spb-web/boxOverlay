@@ -20,13 +20,20 @@ const setDefaultOverlayStyles = (element) => {
         top: '0',
     });
 };
+const isEqualDOMRect = (firstDOMRect, secondDOMRect) => ((firstDOMRect === null && secondDOMRect === null)
+    || (firstDOMRect
+        && secondDOMRect
+        && (firstDOMRect.x === secondDOMRect.x
+            && firstDOMRect.y === secondDOMRect.y
+            && firstDOMRect.width === secondDOMRect.width
+            && firstDOMRect.height === secondDOMRect.height)));
 
 class Overlay {
     constructor() {
         this.element = document.createElement('div');
         this.disableEventsElement = document.createElement('div');
         this.option = {
-            disableEvents: true,
+            disableEvents: false,
         };
         this.style = {
             color: 'rgba(0,0,0,.5)',
@@ -37,11 +44,13 @@ class Overlay {
         setDefaultOverlayStyles(element);
         applyStyle(element, {
             pointerEvents: 'none',
+            willСhange: 'transform, width, height',
         });
         setDefaultOverlayStyles(disableEventsElement);
         applyStyle(disableEventsElement, {
             right: '0',
             bottom: '0',
+            willСhange: 'clip-path',
         });
         disableEventsElement.onclick = (event) => {
             event.preventDefault();
@@ -181,9 +190,25 @@ class BoxOverlay {
         this.overlay.destroy();
     }
     watch() {
-        this.calcBox();
-        this.handleUpdate(this.rect);
-        this.overlay.setRect(this.rect);
+        const rect = this.calcBox();
+        if (!isEqualDOMRect(this.rect, rect)) {
+            if (!rect) {
+                this.rect = rect;
+            }
+            else {
+                if (!this.rect) {
+                    this.rect = new DOMRect(rect.x, rect.y, rect.width, rect.height);
+                }
+                else {
+                    this.rect.x = rect.x;
+                    this.rect.y = rect.y;
+                    this.rect.width = rect.width;
+                    this.rect.height = rect.height;
+                }
+            }
+            this.handleUpdate(this.rect);
+            this.overlay.setRect(this.rect);
+        }
         this.requestAnimationFrameId = requestAnimationFrame(() => {
             this.watch();
         });
@@ -191,29 +216,23 @@ class BoxOverlay {
     calcBox() {
         const elements = this.getElements();
         if (elements.length === 0) {
-            this.rect = null;
-            return;
+            return null;
         }
-        if (this.rect === null) {
-            this.rect = new DOMRect(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, 0, 0);
-        }
-        else {
-            this.rect.x = Number.MAX_SAFE_INTEGER;
-            this.rect.y = Number.MAX_SAFE_INTEGER;
-            this.rect.width = 0;
-            this.rect.height = 0;
-        }
-        const boxRect = this.rect;
+        let x = Number.MAX_SAFE_INTEGER;
+        let y = Number.MAX_SAFE_INTEGER;
+        let width = 0;
+        let height = 0;
         let bottom = 0;
         let right = 0;
         elements.map(this.getPosition).forEach((elRect) => {
-            boxRect.x = Math.min(elRect.x, boxRect.x);
-            boxRect.y = Math.min(elRect.y, boxRect.y);
+            x = Math.min(elRect.x, x);
+            y = Math.min(elRect.y, y);
             right = Math.max(elRect.x + elRect.width, right);
             bottom = Math.max(elRect.y + elRect.height, bottom);
         });
-        boxRect.width = right - boxRect.x;
-        boxRect.height = bottom - boxRect.y;
+        width = right - x;
+        height = bottom - y;
+        return { x, y, width, height };
     }
 }
 

@@ -56,13 +56,20 @@
             top: '0',
         });
     };
+    var isEqualDOMRect = function (firstDOMRect, secondDOMRect) { return ((firstDOMRect === null && secondDOMRect === null)
+        || (firstDOMRect
+            && secondDOMRect
+            && (firstDOMRect.x === secondDOMRect.x
+                && firstDOMRect.y === secondDOMRect.y
+                && firstDOMRect.width === secondDOMRect.width
+                && firstDOMRect.height === secondDOMRect.height))); };
 
     var Overlay = /** @class */ (function () {
         function Overlay() {
             this.element = document.createElement('div');
             this.disableEventsElement = document.createElement('div');
             this.option = {
-                disableEvents: true,
+                disableEvents: false,
             };
             this.style = {
                 color: 'rgba(0,0,0,.5)',
@@ -73,11 +80,13 @@
             setDefaultOverlayStyles(element);
             applyStyle(element, {
                 pointerEvents: 'none',
+                willСhange: 'transform, width, height',
             });
             setDefaultOverlayStyles(disableEventsElement);
             applyStyle(disableEventsElement, {
                 right: '0',
                 bottom: '0',
+                willСhange: 'clip-path',
             });
             disableEventsElement.onclick = function (event) {
                 event.preventDefault();
@@ -239,9 +248,25 @@
         };
         BoxOverlay.prototype.watch = function () {
             var _this = this;
-            this.calcBox();
-            this.handleUpdate(this.rect);
-            this.overlay.setRect(this.rect);
+            var rect = this.calcBox();
+            if (!isEqualDOMRect(this.rect, rect)) {
+                if (!rect) {
+                    this.rect = rect;
+                }
+                else {
+                    if (!this.rect) {
+                        this.rect = new DOMRect(rect.x, rect.y, rect.width, rect.height);
+                    }
+                    else {
+                        this.rect.x = rect.x;
+                        this.rect.y = rect.y;
+                        this.rect.width = rect.width;
+                        this.rect.height = rect.height;
+                    }
+                }
+                this.handleUpdate(this.rect);
+                this.overlay.setRect(this.rect);
+            }
             this.requestAnimationFrameId = requestAnimationFrame(function () {
                 _this.watch();
             });
@@ -249,29 +274,23 @@
         BoxOverlay.prototype.calcBox = function () {
             var elements = this.getElements();
             if (elements.length === 0) {
-                this.rect = null;
-                return;
+                return null;
             }
-            if (this.rect === null) {
-                this.rect = new DOMRect(Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, 0, 0);
-            }
-            else {
-                this.rect.x = Number.MAX_SAFE_INTEGER;
-                this.rect.y = Number.MAX_SAFE_INTEGER;
-                this.rect.width = 0;
-                this.rect.height = 0;
-            }
-            var boxRect = this.rect;
+            var x = Number.MAX_SAFE_INTEGER;
+            var y = Number.MAX_SAFE_INTEGER;
+            var width = 0;
+            var height = 0;
             var bottom = 0;
             var right = 0;
             elements.map(this.getPosition).forEach(function (elRect) {
-                boxRect.x = Math.min(elRect.x, boxRect.x);
-                boxRect.y = Math.min(elRect.y, boxRect.y);
+                x = Math.min(elRect.x, x);
+                y = Math.min(elRect.y, y);
                 right = Math.max(elRect.x + elRect.width, right);
                 bottom = Math.max(elRect.y + elRect.height, bottom);
             });
-            boxRect.width = right - boxRect.x;
-            boxRect.height = bottom - boxRect.y;
+            width = right - x;
+            height = bottom - y;
+            return { x: x, y: y, width: width, height: height };
         };
         return BoxOverlay;
     }());

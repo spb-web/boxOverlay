@@ -28,3 +28,18 @@ export const setDefaultOverlayStyles = (element:HTMLElement) => {
     top: '0',
   })
 }
+
+export const isEqualDOMRect = (
+  firstDOMRect:{x:number, y:number, width:number, height: number}|null,
+  secondDOMRect:{x:number, y:number, width:number, height: number}|null,
+) => (
+  (firstDOMRect === null && secondDOMRect === null)
+  || (
+    firstDOMRect
+    && secondDOMRect
+    && (firstDOMRect.x === secondDOMRect.x
+    && firstDOMRect.y === secondDOMRect.y
+    && firstDOMRect.width === secondDOMRect.width
+    && firstDOMRect.height === secondDOMRect.height)
+  )
+)
