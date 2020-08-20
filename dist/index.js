@@ -225,8 +225,8 @@ class BoxOverlay {
                     this.rect.height = rect.height;
                 }
             }
-            this.handleUpdate(this.rect);
             this.overlay.setRect(this.rect);
+            this.handleUpdate(this.rect);
         }
         this.requestAnimationFrameId = requestAnimationFrame(() => {
             this.watch();

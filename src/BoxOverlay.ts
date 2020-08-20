@@ -84,10 +84,8 @@ export class BoxOverlay {
         }
       }
 
-      this.overlay.setRect(
-        this.rect,
-        () => this.handleUpdate(this.rect)
-      )
+      this.overlay.setRect(this.rect)
+      this.handleUpdate(this.rect)
     }
 
     this.requestAnimationFrameId = requestAnimationFrame(() => {
