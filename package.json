@@ -1,7 +1,7 @@
 {
-  "name": "@spbweb/box-overlay",
+  "name": "@spb-web/box-overlay",
   "version": "0.0.13",
-  "description": "",
+  "description": "no dependencies, works with animated elements, simple api, typescript, modern, can highlight multiple elements",
   "main": "dist/index.js",
   "typings": "types/index",
   "scripts": {
@@ -17,5 +17,13 @@
     "tslib": "^2.0.1",
     "typescript": "^3.9.7"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/spb-web/boxOverlay.git"
+  },
+  "bugs": {
+    "url": "https://github.com/spb-web/boxOverlay/issues"
+  },
+  "homepage": "https://spb-web.github.io/boxOverlay"
 }
