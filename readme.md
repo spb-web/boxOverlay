@@ -4,7 +4,10 @@ typescript, modern, can highlight multiple elements
 
 [Demo and docs](https://spb-web.github.io/boxOverlay/)
 
-```npm i @spbweb/box-overlay --save```
+CircleCI 
+[![<@spb-web/box-overlay>](https://circleci.com/gh/spb-web/boxOverlay.svg?style=svg)](<https://circleci.com/gh/spb-web/boxOverlay>)
+
+```npm i @spb-web/box-overlay --save```
 
 ```
 const boxOverlay = new BoxOverlay()
