@@ -5,16 +5,35 @@ const boxOverlay = new BoxOverlay((rect) => {
 })
 
 const selectors = [
-  ['.q1'],
-  ['.q2'],
-  ['.q3'],
-  ['.q1', '.q2'],
-  []
+  ['.example-element1'],
+  ['.example-element2'],
+  ['.example-element3'],
+  ['.example-element1', '.example-element2'],
 ]
 
 let prevIndex = 0
+let interval = -1
+let run = false
 
-setInterval(() => {
+// @ts-ignore
+window.stopExample = function stopExample() {
+  if (!run) {
+    return
+  }
+
+  const stopButton = document.querySelector('.stop-example')
+
+  if (stopButton) {
+    (stopButton as HTMLElement).style.display = 'none'
+  }
+
+  clearInterval(interval)
+  boxOverlay.clear()
+  boxOverlay.stop()
+  run = false
+}
+
+function step() {
   const currentIndex = prevIndex + 1 >= selectors.length ? 0 : prevIndex + 1
   const selector = selectors[prevIndex]
   const prevSelectors = selectors[currentIndex]
@@ -27,9 +46,28 @@ setInterval(() => {
   })
 
   prevIndex = currentIndex
-}, 3000)
+}
+// @ts-ignore
+window.startExample = function startExample() {
+  if (run) {
+    return
+  }
 
-boxOverlay.start()
+  step()
+
+  const stopButton = document.querySelector('.stop-example')
+
+  if (stopButton) {
+    (stopButton as HTMLElement).style.display = 'block'
+  }
+
+  run = true
+  interval = setInterval(() => {
+    step()
+  }, 3000)
+  
+  boxOverlay.start()  
+}
 
 // @ts-ignore
 window.boxOverlay = boxOverlay

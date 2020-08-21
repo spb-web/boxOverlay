@@ -100,16 +100,12 @@
                 willСhange: 'transform, width, height',
             });
             setDefaultOverlayStyles(disableEventsElement);
-            // applyStyle(
-            //   disableEventsElement, 
-            //   {
-            //     right: '0',
-            //     bottom: '0',
-            //     willСhange: 'clip-path',
-            //   }
-            // )
+            applyStyle(disableEventsElement, {
+                right: '0',
+                bottom: '0',
+            });
             EVENTS_LIST.forEach(function (eventName) {
-                disableEventsElement.addEventListener(eventName, disableMouseEvents, { passive: true });
+                disableEventsElement.addEventListener(eventName, disableMouseEvents, { passive: true, capture: true });
             });
             this.applyStyle();
         }
@@ -212,13 +208,13 @@
             }
         };
         Overlay.prototype.applyStyle = function () {
-            var _a = this, element = _a.element, style = _a.style;
-            applyStyle(element, {
+            var style = this.style;
+            applyStyle(this.element, {
                 boxShadow: "0 0 0 40000px " + style.color,
                 borderRadius: style.borderRadius + "px",
                 zIndex: "" + style.zIndex,
             });
-            applyStyle(element, {
+            applyStyle(this.disableEventsElement, {
                 zIndex: "" + (style.zIndex + 1),
             });
         };
@@ -283,8 +279,8 @@
                         this.rect.height = rect.height;
                     }
                 }
-                this.handleUpdate(this.rect);
                 this.overlay.setRect(this.rect);
+                this.handleUpdate(this.rect);
             }
             this.requestAnimationFrameId = requestAnimationFrame(function () {
                 _this.watch();
@@ -318,14 +314,29 @@
         console.log('Update rect', rect);
     });
     var selectors = [
-        ['.q1'],
-        ['.q2'],
-        ['.q3'],
-        ['.q1', '.q2'],
-        []
+        ['.example-element1'],
+        ['.example-element2'],
+        ['.example-element3'],
+        ['.example-element1', '.example-element2'],
     ];
     var prevIndex = 0;
-    setInterval(function () {
+    var interval = -1;
+    var run = false;
+    // @ts-ignore
+    window.stopExample = function stopExample() {
+        if (!run) {
+            return;
+        }
+        var stopButton = document.querySelector('.stop-example');
+        if (stopButton) {
+            stopButton.style.display = 'none';
+        }
+        clearInterval(interval);
+        boxOverlay.clear();
+        boxOverlay.stop();
+        run = false;
+    };
+    function step() {
         var currentIndex = prevIndex + 1 >= selectors.length ? 0 : prevIndex + 1;
         var selector = selectors[prevIndex];
         var prevSelectors = selectors[currentIndex];
@@ -336,8 +347,23 @@
             boxOverlay.add(item);
         });
         prevIndex = currentIndex;
-    }, 3000);
-    boxOverlay.start();
+    }
+    // @ts-ignore
+    window.startExample = function startExample() {
+        if (run) {
+            return;
+        }
+        step();
+        var stopButton = document.querySelector('.stop-example');
+        if (stopButton) {
+            stopButton.style.display = 'block';
+        }
+        run = true;
+        interval = setInterval(function () {
+            step();
+        }, 3000);
+        boxOverlay.start();
+    };
     // @ts-ignore
     window.boxOverlay = boxOverlay;
 
