@@ -1,7 +1,7 @@
 import typescript from '@rollup/plugin-typescript'
 
 export default {
-  input: './demo/index.ts',
+  input: './docs/index.ts',
   plugins: [
     typescript({
       lib: ["es2017.object", "es6", "dom"],
@@ -12,7 +12,7 @@ export default {
   output: [
     {
       dir: '.',
-      entryFileNames: 'demo/index.js',
+      entryFileNames: 'docs/index.js',
       format: 'iife'
     },
   ]

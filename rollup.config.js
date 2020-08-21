@@ -9,7 +9,7 @@ export default {
       declaration: true,
       declarationDir: 'types/',
       rootDir: 'src/',
-      exclude: 'demo/**/*.ts'
+      exclude: 'docs/**/*.ts'
     })
   ],
   output: [
