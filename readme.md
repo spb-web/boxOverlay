@@ -2,6 +2,8 @@
 no dependencies, works with animated elements, simple api,
 typescript, modern, can highlight multiple elements
 
+[Demo and docs](https://spb-web.github.io/boxOverlay/)
+
 ```npm i @spbweb/box-overlay --save```
 
 ```
