@@ -1,4 +1,8 @@
 # Main Hero Magic to highlight yourself!
+
+[![Cypress.io](https://img.shields.io/badge/tested%20with-Cypress-04C38E.svg)](https://dashboard.cypress.io/projects/2ztf48/runs)
+[![<@spb-web/box-overlay>](https://circleci.com/gh/spb-web/boxOverlay/tree/master.svg?style=svg)](<https://circleci.com/gh/spb-web/boxOverlay/tree/master>)
+
 no dependencies, works with animated elements, simple api,
 typescript, modern, can highlight multiple elements
 
@@ -6,10 +10,9 @@ typescript, modern, can highlight multiple elements
 [Docs](https://spb-web.github.io/boxOverlay/docs/) |
 [Issues](https://github.com/spb-web/boxOverlay/issues)
 
-CircleCI 
-[![<@spb-web/box-overlay>](https://circleci.com/gh/spb-web/boxOverlay.svg?style=svg)](<https://circleci.com/gh/spb-web/boxOverlay>)
 
-## Install
+## Install 
+[![npm version](https://badge.fury.io/js/%40spb-web%2Fbox-overlay.svg)](https://badge.fury.io/js/%40spb-web%2Fbox-overlay)
 ```
 npm i @spb-web/box-overlay --save
 ```
@@ -42,6 +45,7 @@ setInterval(() => {
 - [x] Highlight multiple elements
 - [x] Handle moving elements
 - [x] Rounded corner
+- [ ] Tests
 - [ ] Stylization with css
 - [ ] Animation
 - [ ] Capture mouse/touch events
