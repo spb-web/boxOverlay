@@ -1,6 +1,6 @@
 {
   "name": "@spb-web/box-overlay",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "no dependencies, works with animated elements, simple api, typescript, modern, can highlight multiple elements",
   "main": "dist/index.js",
   "typings": "types/index",
