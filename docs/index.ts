@@ -1,4 +1,15 @@
+//@ts-ignore
+import * as hljs from 'highlight.js/lib/core';
+import 'highlight.js/styles/github.css';
+// @ts-ignore
+import typescript from 'highlight.js/lib/languages/typescript';
 import { BoxOverlay } from '../src'
+hljs.registerLanguage('typescript', typescript);
+
+hljs.initHighlightingOnLoad();
+
+// @ts-ignore
+window.BoxOverlay = BoxOverlay
 
 const boxOverlay = new BoxOverlay((rect) => {
   console.log('Update rect', rect)

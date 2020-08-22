@@ -1,17 +1,43 @@
 export declare class Overlay {
     private element;
     private disableEventsElement;
+    /**
+     * @class Overlay
+     */
     constructor();
     private style;
-    set color(color: string);
+    /**
+     *
+     */
     get color(): string;
+    set color(color: string);
+    /**
+     *
+     */
     get borderRadius(): number;
     set borderRadius(radius: number);
+    /**
+     * @returns {number}
+     */
     get zIndex(): number;
     set zIndex(zIndex: number);
+    /**
+     * @returns {HTMLDivElement}
+     */
     getElement(): HTMLDivElement;
+    /**
+     * @param rect
+     *
+     * @returns {void}
+     */
     setRect(rect: DOMRect | null): void;
+    /**
+     *
+     */
     mount(): void;
+    /**
+     *
+     */
     destroy(): void;
     private applyStyle;
 }

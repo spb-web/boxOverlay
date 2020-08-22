@@ -26,6 +26,9 @@ export class Overlay {
   //   disableEvents: false,
   // }
 
+  /**
+   * @class Overlay
+   */
   constructor() {
     const { element, disableEventsElement } = this
 
@@ -72,6 +75,13 @@ export class Overlay {
   //   return this.option.disableEvents
   // }
 
+  /**
+   * 
+   */
+  get color() {
+    return this.style.color
+  }
+
   set color(color:string) {
     this.style.color = color
 
@@ -80,10 +90,9 @@ export class Overlay {
     })
   }
 
-  get color() {
-    return this.style.color
-  }
-
+  /**
+   * 
+   */
   get borderRadius() {
     return this.style.borderRadius
   }
@@ -96,7 +105,10 @@ export class Overlay {
     })
   }
 
-  get zIndex() {
+  /**
+   * @returns {number}
+   */
+  get zIndex(): number {
     return this.style.zIndex
   }
 
@@ -108,11 +120,19 @@ export class Overlay {
     })
   }
 
-  public getElement() {
+  /**
+   * @returns {HTMLDivElement}
+   */
+  public getElement(): HTMLDivElement {
     return this.element
   }
 
-  public setRect(rect:DOMRect|null) {
+  /**
+   * @param rect 
+   * 
+   * @returns {void}
+   */
+  public setRect(rect:DOMRect|null):void {
     if (rect) {
       this.mount()
 
@@ -142,6 +162,9 @@ export class Overlay {
     }
   }
 
+  /**
+   * 
+   */
   public mount() {
     const { element, disableEventsElement } = this
     const { body } = document
@@ -155,6 +178,9 @@ export class Overlay {
     }
   }
 
+  /**
+   * 
+   */
   public destroy() {
     const { element, disableEventsElement } = this
     const { body } = document

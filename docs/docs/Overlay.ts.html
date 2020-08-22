@@ -1,0 +1,352 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>2345678 Overlay.ts</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="/boxOverlay/docs.css">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+             
+                <a href="index.html">
+                    <h1 class="navbar-item">@spb-web/box-overlay</h1>
+                </a>
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                 
+                    
+                        <a
+                            class="link user-link "
+                            href="https://circleci.com/gh/spb-web/boxOverlay"
+                        >
+                            CircleCI
+                        </a>
+                    
+                        <a
+                            class="link user-link "
+                            href="https://www.npmjs.com/package/@spb-web/box-overlay"
+                        >
+                            NPM
+                        </a>
+                    
+                        <a
+                            class="link user-link "
+                            href="https://github.com/spb-web/boxOverlay"
+                        >
+                            Github
+                        </a>
+                    
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Classes</h3><ul><li><a href="BoxOverlay.html">BoxOverlay</a></li><li><a href="Overlay.html">Overlay</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>Overlay.ts</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { hasChild, setDefaultOverlayStyles, applyStyle } from './utils'
+
+const disableMouseEvents = (event:Event) => {
+  event.stopPropagation()
+}
+
+const EVENTS_LIST:(keyof GlobalEventHandlersEventMap)[] = [
+  'click',
+  'mousedown',
+  'mouseenter',
+  'mouseleave',
+  'mousemove',
+  'mouseout',
+  'mouseover',
+  'mouseup',
+  'touchcancel',
+  'touchend',
+  'touchmove',
+  'touchstart',
+]
+
+export class Overlay {
+  private element = document.createElement('div')
+  private disableEventsElement = document.createElement('div')
+  // private option = {
+  //   disableEvents: false,
+  // }
+
+  /**
+   * @class Overlay
+   */
+  constructor() {
+    const { element, disableEventsElement } = this
+
+    setDefaultOverlayStyles(element)
+    applyStyle(
+      element, 
+      {
+        pointerEvents: 'none',
+        willСhange: 'transform, width, height',
+      }
+    )
+    setDefaultOverlayStyles(disableEventsElement)
+    applyStyle(
+      disableEventsElement, 
+      {
+        right: '0',
+        bottom: '0',
+        // willСhange: 'clip-path',
+      }
+    )
+
+    EVENTS_LIST.forEach(eventName => {
+      disableEventsElement.addEventListener(
+        eventName,
+        disableMouseEvents,
+        { passive: true, capture: true },
+      )
+    })
+
+    this.applyStyle()
+  }
+
+  private style = {
+    color: 'rgba(0,0,0,.5)',
+    borderRadius: 5,
+    zIndex: 10000,
+  }
+
+  // set disableEvents(bool:boolean) {
+  //   this.option.disableEvents = bool
+  // }
+
+  // get disableEvents() {
+  //   return this.option.disableEvents
+  // }
+
+  /**
+   * 
+   */
+  get color() {
+    return this.style.color
+  }
+
+  set color(color:string) {
+    this.style.color = color
+
+    requestAnimationFrame(() => {
+      this.applyStyle()
+    })
+  }
+
+  /**
+   * 
+   */
+  get borderRadius() {
+    return this.style.borderRadius
+  }
+
+  set borderRadius(radius:number) {
+    this.style.borderRadius = radius
+
+    requestAnimationFrame(() => {
+      this.applyStyle()
+    })
+  }
+
+  /**
+   * @returns {number}
+   */
+  get zIndex(): number {
+    return this.style.zIndex
+  }
+
+  set zIndex(zIndex:number) {
+    this.style.zIndex = zIndex
+
+    requestAnimationFrame(() => {
+      this.applyStyle()
+    })
+  }
+
+  /**
+   * @returns {HTMLDivElement}
+   */
+  public getElement(): HTMLDivElement {
+    return this.element
+  }
+
+  /**
+   * @param rect 
+   * 
+   * @returns {void}
+   */
+  public setRect(rect:DOMRect|null):void {
+    if (rect) {
+      this.mount()
+
+      applyStyle(this.element, {
+        transform: `translate(${rect.x}px, ${rect.y}px)`,
+        width: `${rect.width}px`,
+        height: `${rect.height}px`
+      })
+
+      // const clipPath = this.disableEvents 
+      //   ? 'none'
+      //   : 'polygon(0% 0%, 0 100%,'
+      //     + `${rect.x}px 100%,`
+      //     + `${rect.x}px ${rect.y}px,`
+      //     + `${rect.x + rect.width}px ${rect.y}px,`
+      //     + `${rect.x + rect.width}px ${rect.y + rect.height}px,`
+      //     + `${rect.x}px ${rect.y + rect.height}px,`
+      //     + `${rect.x}px 100%,`
+      //     + '100% 100%, 100% 0%)'
+
+      // applyStyle(
+      //   this.disableEventsElement, 
+      //   { clipPath: clipPath, },
+      // )
+    } else {
+      this.destroy()
+    }
+  }
+
+  /**
+   * 
+   */
+  public mount() {
+    const { element, disableEventsElement } = this
+    const { body } = document
+
+    if (!hasChild(body, element)) {
+      body.appendChild(element)
+    }
+
+    if (!hasChild(body, disableEventsElement)) {
+      body.appendChild(disableEventsElement)
+    }
+  }
+
+  /**
+   * 
+   */
+  public destroy() {
+    const { element, disableEventsElement } = this
+    const { body } = document
+
+    if (hasChild(body, element)) {
+      body.removeChild(element)
+    }
+
+    if (hasChild(body, disableEventsElement)) {
+      body.removeChild(disableEventsElement)
+    }
+  }
+
+  private applyStyle() {
+    const { style } = this
+
+    applyStyle(this.element, {
+      boxShadow: `0 0 0 40000px ${style.color}`,
+      borderRadius: `${style.borderRadius}px`,
+      zIndex: `${style.zIndex}`,
+    })
+    applyStyle(this.disableEventsElement, {
+      zIndex: `${style.zIndex + 1}`,
+    })
+  }
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.5</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by 
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+</body>
+</html>

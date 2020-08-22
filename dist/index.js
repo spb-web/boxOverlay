@@ -49,6 +49,9 @@ class Overlay {
     // private option = {
     //   disableEvents: false,
     // }
+    /**
+     * @class Overlay
+     */
     constructor() {
         this.element = document.createElement('div');
         this.disableEventsElement = document.createElement('div');
@@ -79,15 +82,21 @@ class Overlay {
     // get disableEvents() {
     //   return this.option.disableEvents
     // }
+    /**
+     *
+     */
+    get color() {
+        return this.style.color;
+    }
     set color(color) {
         this.style.color = color;
         requestAnimationFrame(() => {
             this.applyStyle();
         });
     }
-    get color() {
-        return this.style.color;
-    }
+    /**
+     *
+     */
     get borderRadius() {
         return this.style.borderRadius;
     }
@@ -97,6 +106,9 @@ class Overlay {
             this.applyStyle();
         });
     }
+    /**
+     * @returns {number}
+     */
     get zIndex() {
         return this.style.zIndex;
     }
@@ -106,9 +118,17 @@ class Overlay {
             this.applyStyle();
         });
     }
+    /**
+     * @returns {HTMLDivElement}
+     */
     getElement() {
         return this.element;
     }
+    /**
+     * @param rect
+     *
+     * @returns {void}
+     */
     setRect(rect) {
         if (rect) {
             this.mount();
@@ -136,6 +156,9 @@ class Overlay {
             this.destroy();
         }
     }
+    /**
+     *
+     */
     mount() {
         const { element, disableEventsElement } = this;
         const { body } = document;
@@ -146,6 +169,9 @@ class Overlay {
             body.appendChild(disableEventsElement);
         }
     }
+    /**
+     *
+     */
     destroy() {
         const { element, disableEventsElement } = this;
         const { body } = document;
@@ -171,18 +197,49 @@ class Overlay {
 
 const { MAX_SAFE_INTEGER } = Number;
 class BoxOverlay {
+    /**
+     * @class BoxOverlay
+     *
+     * @param handleUpdate {Function=}
+     */
     constructor(handleUpdate = (rect) => { }) {
+        /**
+         * @public
+         * @readonly
+         * @property {Overlay} overlay
+         */
         this.overlay = new Overlay();
         this.elementsOrSelectors = [];
         this.rect = null;
         this.requestAnimationFrameId = -1;
         this.handleUpdate = handleUpdate;
     }
+    /**
+     *
+     * @param selectorOrElement {Element|string}
+     */
     add(selectorOrElement) {
         this.elementsOrSelectors.push(selectorOrElement);
     }
+    /**
+     *
+     */
     clear() {
         this.elementsOrSelectors = [];
+    }
+    /**
+     *
+     */
+    start() {
+        this.watch();
+    }
+    /**
+     *
+     */
+    stop() {
+        cancelAnimationFrame(this.requestAnimationFrameId);
+        this.requestAnimationFrameId = -1;
+        this.overlay.destroy();
     }
     getElements() {
         return this.elementsOrSelectors.reduce((elements, selectorOrElement) => {
@@ -199,14 +256,6 @@ class BoxOverlay {
     getPosition(element) {
         const domRect = element.getBoundingClientRect();
         return domRect;
-    }
-    start() {
-        this.watch();
-    }
-    stop() {
-        cancelAnimationFrame(this.requestAnimationFrameId);
-        this.requestAnimationFrameId = -1;
-        this.overlay.destroy();
     }
     watch() {
         const rect = this.calcBox();

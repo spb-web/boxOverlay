@@ -1,0 +1,288 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>2345678 BoxOverlay.ts</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="./build/entry.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,400,700|Inconsolata,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+  <link type="text/css" rel="stylesheet" href="https://jmblog.github.io/color-themes-for-google-code-prettify/themes/tomorrow-night.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/app.min.css">
+  <link type="text/css" rel="stylesheet" href="styles/iframe.css">
+  <link type="text/css" rel="stylesheet" href="/boxOverlay/docs.css">
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+  
+</head>
+
+
+
+<body class="layout small-header">
+    <div id="stickyNavbarOverlay"></div>
+    
+
+<div class="top-nav">
+    <div class="inner">
+        <a id="hamburger" role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+        <div class="logo">
+            
+             
+                <a href="index.html">
+                    <h1 class="navbar-item">@spb-web/box-overlay</h1>
+                </a>
+            
+        </div>
+        <div class="menu">
+            
+            <div class="navigation">
+                <a
+                    href="index.html"
+                    class="link"
+                >
+                    API Documentation
+                </a>
+                
+                 
+                    
+                        <a
+                            class="link user-link "
+                            href="https://circleci.com/gh/spb-web/boxOverlay"
+                        >
+                            CircleCI
+                        </a>
+                    
+                        <a
+                            class="link user-link "
+                            href="https://www.npmjs.com/package/@spb-web/box-overlay"
+                        >
+                            NPM
+                        </a>
+                    
+                        <a
+                            class="link user-link "
+                            href="https://github.com/spb-web/boxOverlay"
+                        >
+                            Github
+                        </a>
+                    
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+    <div id="main">
+        <div
+            class="sidebar "
+            id="sidebarNav"
+        >
+            
+            <nav>
+                
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Classes</h3><ul><li><a href="BoxOverlay.html">BoxOverlay</a></li><li><a href="Overlay.html">Overlay</a></li></ul></div>
+                
+            </nav>
+        </div>
+        <div class="core" id="main-content-wrapper">
+            <div class="content">
+                <header class="page-title">
+                    <p>Source</p>
+                    <h1>BoxOverlay.ts</h1>
+                </header>
+                
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { Overlay } from './Overlay'
+import { isEqualDOMRect } from './utils'
+
+const { MAX_SAFE_INTEGER } = Number
+
+export class BoxOverlay {
+  /**
+   * @public
+   * @readonly
+   * @property {Overlay} overlay
+   */
+  public readonly overlay = new Overlay()
+
+  /**
+   * @class BoxOverlay
+   * 
+   * @param handleUpdate {Function=}
+   */
+  constructor(handleUpdate = (rect:DOMRect|null) => {}) {
+    this.handleUpdate = handleUpdate
+  }
+
+  private handleUpdate:(rect:DOMRect|null) => void
+
+  private elementsOrSelectors:(Element|string)[] = []
+
+  private rect:DOMRect|null = null
+
+  private requestAnimationFrameId:number = -1
+
+  /**
+   * 
+   * @param selectorOrElement {Element|string}
+   */
+  public add(selectorOrElement:Element|string) {
+    this.elementsOrSelectors.push(selectorOrElement)
+  }
+
+  /**
+   * 
+   */
+  public clear() {
+    this.elementsOrSelectors = []
+  }
+
+  /**
+   * 
+   */
+  public start() {
+    this.watch()
+  }
+
+  /**
+   * 
+   */
+  public stop() {
+    cancelAnimationFrame(this.requestAnimationFrameId)
+
+    this.requestAnimationFrameId = -1
+
+    this.overlay.destroy()
+  }
+
+  private getElements() {
+    return this.elementsOrSelectors.reduce((elements, selectorOrElement) => {
+      if (typeof selectorOrElement === 'string') {
+        const findedElement = document.querySelectorAll(selectorOrElement)
+  
+        if (!findedElement) {
+          throw new Error(
+            `Can not find element by selector ${selectorOrElement}`
+          )
+        }
+  
+        return elements.concat(Array.from(findedElement))
+      }
+    
+      return elements.concat([selectorOrElement])
+    }, [] as Element[])
+  }
+
+  private getPosition(element:Element) {
+    const domRect = element.getBoundingClientRect()
+
+    return domRect
+  }
+
+  private watch() {
+    const rect = this.calcBox()
+
+    if (!isEqualDOMRect(this.rect, rect)) {
+      if (!rect) {
+        this.rect = rect
+      } else {
+        if (!this.rect) {
+          this.rect = new DOMRect(
+            rect.x,
+            rect.y,
+            rect.width,
+            rect.height,
+          )
+        } else {
+          this.rect.x = rect.x
+          this.rect.y = rect.y
+          this.rect.width = rect.width
+          this.rect.height = rect.height
+        }
+      }
+
+      this.overlay.setRect(this.rect)
+      this.handleUpdate(this.rect)
+    }
+
+    this.requestAnimationFrameId = requestAnimationFrame(() => {
+      this.watch()
+    })
+  }
+
+  private calcBox() {
+    const elements = this.getElements()
+
+    if (elements.length === 0) {
+      return null
+    }
+
+    let x = MAX_SAFE_INTEGER
+    let y = MAX_SAFE_INTEGER
+    let width = 0
+    let height = 0
+    let bottom = 0
+    let right = 0
+    
+    elements.map(this.getPosition).forEach((elRect) => {
+      x = Math.min(elRect.x, x)
+      y = Math.min(elRect.y, y)
+      right = Math.max(elRect.x + elRect.width, right)
+      bottom = Math.max(elRect.y + elRect.height, bottom)
+    })
+
+    width = right - x
+    height = bottom - y
+
+    return { x, y, width, height }
+  }
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+            </div>
+            
+            <footer class="footer">
+                <div class="content has-text-centered">
+                    <p>Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.5</a></p>
+                    <p class="sidebar-created-by">
+                        <a href="https://github.com/SoftwareBrothers/better-docs" target="_blank">BetterDocs theme</a> provided with <i class="fas fa-heart"></i> by 
+                        <a href="http://softwarebrothers.co" target="_blank">SoftwareBrothers - JavaScript Development Agency</a>
+                    </p>
+                </div>
+            </footer>
+            
+        </div>
+        <div id="side-nav" class="side-nav">
+        </div>
+    </div>
+<script src="scripts/app.min.js"></script>
+<script>PR.prettyPrint();</script>
+<script src="scripts/linenumber.js"> </script>
+
+</body>
+</html>

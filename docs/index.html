@@ -17,11 +17,6 @@
       rel="stylesheet"
     />
     <!--Replace with your tailwind.css once created-->
-    <link
-      href="https://unpkg.com/@tailwindcss/custom-forms/dist/custom-forms.min.css"
-      rel="stylesheet"
-    />
-    <!--Tailwind Custom Forms - use to standardise form fields - https://github.com/tailwindcss/custom-forms-->
 
     <style>
       @import url("https://rsms.me/inter/inter.css");
@@ -75,6 +70,110 @@
       }
 
       /* Custom code for the demo */
+
+
+
+
+
+      /*
+
+github.com style (c) Vasily Polovnyov <vast@whiteants.net>
+
+*/
+
+.hljs {
+  display: block;
+  overflow-x: auto;
+  padding: 0.5em;
+  color: #333;
+}
+
+.hljs-comment,
+.hljs-quote {
+  color: #998;
+  font-style: italic;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-subst {
+  color: #156bc3;
+  font-weight: bold;
+}
+
+.hljs-number,
+.hljs-literal,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag .hljs-attr {
+  color: #008080;
+}
+
+.hljs-string,
+.hljs-doctag {
+  color: #d14;
+}
+
+.hljs-title,
+.hljs-section,
+.hljs-selector-id {
+  color: #900;
+  font-weight: bold;
+}
+
+.hljs-subst {
+  font-weight: normal;
+}
+
+.hljs-type,
+.hljs-class .hljs-title {
+  color: #458;
+  font-weight: bold;
+}
+
+.hljs-tag,
+.hljs-name,
+.hljs-attribute {
+  color: #000080;
+  font-weight: normal;
+}
+
+.hljs-regexp,
+.hljs-link {
+  color: #009926;
+}
+
+.hljs-symbol,
+.hljs-bullet {
+  color: #990073;
+}
+
+.hljs-built_in,
+.hljs-builtin-name {
+  color: #0086b3;
+}
+
+.hljs-meta {
+  color: #999;
+  font-weight: bold;
+}
+
+.hljs-deletion {
+  background: #fdd;
+}
+
+.hljs-addition {
+  background: #dfd;
+}
+
+.hljs-emphasis {
+  font-style: italic;
+}
+
+.hljs-strong {
+  font-weight: bold;
+}
+
     </style>
   </head>
 
@@ -170,13 +269,13 @@
         </p>
 
         <button
-          class="mx-auto lg:mx-0 hover:underline text-gray-800 font-extrabold rounded my-2 md:my-6 py-4 px-8 shadow-lg w-48"
+          class=" example-element2 mx-auto lg:mx-0 hover:underline text-gray-800 font-extrabold rounded my-2 md:my-6 py-4 px-8 shadow-lg w-48"
           onclick="startExample()"
         >
           Run example
         </button>
         <a
-          href="#"
+          href="/boxOverlay/docs"
           class="example-element2 inline-block mx-auto lg:mx-0 hover:underline bg-transparent text-gray-100 font-extrabold my-2 md:my-6 py-2 lg:py-4 px-8"
           >Get started</a
         >
@@ -186,27 +285,24 @@
         <div
           class="example-element3 browser-mockup flex flex-1 m-6 md:px-0 md:m-12 bg-white w-1/2 rounded shadow-xl overflow-auto"
         >
-          <pre>
-            const boxOverlay = new BoxOverlay()
+<pre><code class="language-typescript text-lg">  const boxOverlay = new BoxOverlay()
+  const selectors = [
+    ['.example-element1'],
+    ['.example-element2'],
+    ['.example-element3'],
+    ['.example-element1', '.example-element2'],
+  ]
+  let currentIndex = 0
 
-            let currentIndex = 0
+  setInterval(() => {
+    currentIndex+=1
+    currentIndex = currentIndex >= selectors.length ? 0 : currentIndex
 
-            const selectors = [
-              ['.example-element1'],
-              ['.example-element2'],
-              ['.example-element3'],
-              ['.example-element1', '.example-element2'],
-            ]
+    boxOverlay.clear()
 
-            setInterval(() => {
-              currentIndex+=1
-              currentIndex = currentIndex >= selectors.length ? 0 : currentIndex
-            
-              boxOverlay.clear()
-
-              selectors[currentIndex].forEach(boxOverlay.add)
-            }, 3000)
-          </pre>
+    selectors[currentIndex].forEach(boxOverlay.add)
+  }, 3000)
+</code></pre>
         </div>
       </div>
     </div>  

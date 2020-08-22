@@ -1,0 +1,47 @@
+{
+  "opts": {
+    "template": "node_modules/better-docs",
+    "destination": "./docs/docs/",
+    "readme": "./readme.md"
+  },
+  "tags": {
+    "allowUnknownTags": ["optional"]
+  },
+  "plugins": [
+      "node_modules/better-docs/typescript"
+  ],
+  "source": {
+    "include":"./src",
+    "includePattern": "\\.ts"
+  },
+
+  "templates": {
+    "cleverLinks": false,
+    "monospaceLinks": false,
+    "search": false,
+    "better-docs": {
+      "name": "@spb-web/box-overlay",
+      "title": "2345678",
+      "css": "/boxOverlay/docs.css",
+      "trackingCode": "",
+      "hideGenerator": false,
+      "navLinks": [
+        {
+          "label": "CircleCI",
+          "href": "https://circleci.com/gh/spb-web/boxOverlay",
+          "target": "_blank"
+        },
+        {
+          "label": "NPM",
+          "href": "https://www.npmjs.com/package/@spb-web/box-overlay",
+          "target": "_blank"
+        },
+        {
+          "label": "Github",
+          "href": "https://github.com/spb-web/boxOverlay",
+          "target": "_blank"
+        }
+      ]
+    }
+  }
+}

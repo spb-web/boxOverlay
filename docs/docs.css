@@ -1,0 +1,48 @@
+body #main {
+  background-image: linear-gradient(-225deg, #cbbacc 0%, #2580b3 100%) !important;
+}
+
+body footer.footer {
+  background: none !important;
+  border: none !important;
+}
+
+body footer.footer a {
+  color: #000;
+}
+
+body .side-nav a,
+body .sidebar a {
+  color: #000;
+  opacity: .75;
+}
+
+body #sidebarNav,
+body #side-nav {
+  border: none !important;
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+	background-color: transparent;
+}
+
+*::-webkit-scrollbar-track {
+  border-radius: 10px;
+  background: transparent;
+  border: 1px solid #ccc;
+}
+
+*::-webkit-scrollbar-thumb {
+  border-radius: 0px;
+  background: rgba(255, 255, 253, 1);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #fff;
+}
+
+*::-webkit-scrollbar-thumb:active {
+  background: linear-gradient(left, #22ADD4, #1E98BA);
+}

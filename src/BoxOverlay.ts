@@ -4,8 +4,18 @@ import { isEqualDOMRect } from './utils'
 const { MAX_SAFE_INTEGER } = Number
 
 export class BoxOverlay {
-  public overlay = new Overlay()
+  /**
+   * @public
+   * @readonly
+   * @property {Overlay} overlay
+   */
+  public readonly overlay = new Overlay()
 
+  /**
+   * @class BoxOverlay
+   * 
+   * @param handleUpdate {Function=}
+   */
   constructor(handleUpdate = (rect:DOMRect|null) => {}) {
     this.handleUpdate = handleUpdate
   }
@@ -18,12 +28,37 @@ export class BoxOverlay {
 
   private requestAnimationFrameId:number = -1
 
+  /**
+   * 
+   * @param selectorOrElement {Element|string}
+   */
   public add(selectorOrElement:Element|string) {
     this.elementsOrSelectors.push(selectorOrElement)
   }
 
+  /**
+   * 
+   */
   public clear() {
     this.elementsOrSelectors = []
+  }
+
+  /**
+   * 
+   */
+  public start() {
+    this.watch()
+  }
+
+  /**
+   * 
+   */
+  public stop() {
+    cancelAnimationFrame(this.requestAnimationFrameId)
+
+    this.requestAnimationFrameId = -1
+
+    this.overlay.destroy()
   }
 
   private getElements() {
@@ -48,18 +83,6 @@ export class BoxOverlay {
     const domRect = element.getBoundingClientRect()
 
     return domRect
-  }
-
-  public start() {
-    this.watch()
-  }
-
-  public stop() {
-    cancelAnimationFrame(this.requestAnimationFrameId)
-
-    this.requestAnimationFrameId = -1
-
-    this.overlay.destroy()
   }
 
   private watch() {
