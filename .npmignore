@@ -1,0 +1,13 @@
+.circleci
+cypress
+docs
+node_modules
+src
+.gitignore
+CHANGELOG.md
+cypress.json
+jsdoc.json
+readme.md
+rollup.config.js
+rollup.demo.config.js
+tsconfig.json
