@@ -2697,6 +2697,20 @@
       return Overlay;
   }());
 
+  var Rect = /** @class */ (function () {
+      function Rect(x, y, width, height) {
+          if (x === void 0) { x = 0; }
+          if (y === void 0) { y = 0; }
+          if (width === void 0) { width = 0; }
+          if (height === void 0) { height = 0; }
+          this.x = x;
+          this.y = y;
+          this.width = width;
+          this.height = height;
+      }
+      return Rect;
+  }());
+
   var MAX_SAFE_INTEGER = Number.MAX_SAFE_INTEGER;
   var BoxOverlay = /** @class */ (function () {
       /**
@@ -2758,7 +2772,7 @@
       };
       BoxOverlay.prototype.getPosition = function (element) {
           var domRect = element.getBoundingClientRect();
-          return domRect;
+          return new Rect(domRect.left, domRect.top, domRect.width, domRect.height);
       };
       BoxOverlay.prototype.watch = function () {
           var _this = this;
@@ -2769,7 +2783,7 @@
               }
               else {
                   if (!this.rect) {
-                      this.rect = new DOMRect(rect.x, rect.y, rect.width, rect.height);
+                      this.rect = new Rect(rect.x, rect.y, rect.width, rect.height);
                   }
                   else {
                       this.rect.x = rect.x;

@@ -2,8 +2,9 @@
 no dependencies, works with animated elements, simple api,
 typescript, modern, can highlight multiple elements
 
-[Demo](https://spb-web.github.io/boxOverlay/)
-[Docs](https://spb-web.github.io/boxOverlay/docs/)
+[Demo](https://spb-web.github.io/boxOverlay/) |
+[Docs](https://spb-web.github.io/boxOverlay/docs/) |
+[Issues](https://github.com/spb-web/boxOverlay/issues)
 
 CircleCI 
 [![<@spb-web/box-overlay>](https://circleci.com/gh/spb-web/boxOverlay.svg?style=svg)](<https://circleci.com/gh/spb-web/boxOverlay>)

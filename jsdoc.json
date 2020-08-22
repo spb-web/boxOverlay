@@ -2,7 +2,7 @@
   "opts": {
     "template": "node_modules/better-docs",
     "destination": "./docs/docs/",
-    "readme": "./readme.md"
+    "readme": "./docs/readme.md"
   },
   "tags": {
     "allowUnknownTags": ["optional"]
@@ -21,11 +21,16 @@
     "search": false,
     "better-docs": {
       "name": "@spb-web/box-overlay",
-      "title": "2345678",
+      "title": "@spb-web/box-overlay",
       "css": "/boxOverlay/docs.css",
       "trackingCode": "",
       "hideGenerator": false,
       "navLinks": [
+        {
+          "label": "Issues",
+          "href": "https://github.com/spb-web/boxOverlay/issues",
+          "target": "_blank"
+        },
         {
           "label": "CircleCI",
           "href": "https://circleci.com/gh/spb-web/boxOverlay",
