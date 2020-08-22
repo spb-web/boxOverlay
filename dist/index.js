@@ -195,6 +195,25 @@ class Overlay {
     }
 }
 
+class Rect {
+    /**
+     * @param {number=} x
+     * @param {number=} y
+     * @param {number=} width
+     * @param {number=} height
+     * @property {number} x
+     * @property {number} y
+     * @property {number} width
+     * @property {number} height
+     */
+    constructor(x = 0, y = 0, width = 0, height = 0) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+    }
+}
+
 const { MAX_SAFE_INTEGER } = Number;
 class BoxOverlay {
     /**
@@ -255,7 +274,7 @@ class BoxOverlay {
     }
     getPosition(element) {
         const domRect = element.getBoundingClientRect();
-        return domRect;
+        return new Rect(domRect.left, domRect.top, domRect.width, domRect.height);
     }
     watch() {
         const rect = this.calcBox();
@@ -265,7 +284,7 @@ class BoxOverlay {
             }
             else {
                 if (!this.rect) {
-                    this.rect = new DOMRect(rect.x, rect.y, rect.width, rect.height);
+                    this.rect = new Rect(rect.x, rect.y, rect.width, rect.height);
                 }
                 else {
                     this.rect.x = rect.x;

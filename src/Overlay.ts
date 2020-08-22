@@ -1,4 +1,5 @@
 import { hasChild, setDefaultOverlayStyles, applyStyle } from './utils'
+import { Rect } from './Rect'
 
 const disableMouseEvents = (event:Event) => {
   event.stopPropagation()
@@ -132,7 +133,7 @@ export class Overlay {
    * 
    * @returns {void}
    */
-  public setRect(rect:DOMRect|null):void {
+  public setRect(rect:Rect|null):void {
     if (rect) {
       this.mount()
 
