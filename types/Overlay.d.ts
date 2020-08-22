@@ -1,3 +1,4 @@
+import { Rect } from './Rect';
 export declare class Overlay {
     private element;
     private disableEventsElement;
@@ -30,7 +31,7 @@ export declare class Overlay {
      *
      * @returns {void}
      */
-    setRect(rect: DOMRect | null): void;
+    setRect(rect: Rect | null): void;
     /**
      *
      */

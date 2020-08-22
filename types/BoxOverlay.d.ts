@@ -1,4 +1,5 @@
 import { Overlay } from './Overlay';
+import { Rect } from './Rect';
 export declare class BoxOverlay {
     /**
      * @public
@@ -11,7 +12,7 @@ export declare class BoxOverlay {
      *
      * @param handleUpdate {Function=}
      */
-    constructor(handleUpdate?: (rect: DOMRect | null) => void);
+    constructor(handleUpdate?: (rect: Rect | null) => void);
     private handleUpdate;
     private elementsOrSelectors;
     private rect;
