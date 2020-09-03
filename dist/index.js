@@ -30,33 +30,34 @@ const isEqualDOMRect = (firstDOMRect, secondDOMRect) => ((firstDOMRect === null 
             && firstDOMRect.width === secondDOMRect.width
             && firstDOMRect.height === secondDOMRect.height)));
 
-const disableMouseEvents = (event) => {
-    event.stopPropagation();
-};
-const EVENTS_LIST = [
-    'click',
-    'mousedown',
-    'mouseenter',
-    'mouseleave',
-    'mousemove',
-    'mouseout',
-    'mouseover',
-    'mouseup',
-    'touchcancel',
-    'touchend',
-    'touchmove',
-    'touchstart',
-];
+// const disableMouseEvents = (event:Event) => {
+//   event.stopPropagation()
+// }
+// const EVENTS_LIST:(keyof GlobalEventHandlersEventMap)[] = [
+//   'click',
+//   'mousedown',
+//   'mouseenter',
+//   'mouseleave',
+//   'mousemove',
+//   'mouseout',
+//   'mouseover',
+//   'mouseup',
+//   'touchcancel',
+//   'touchend',
+//   'touchmove',
+//   'touchstart',
+// ]
 class Overlay {
-    // private option = {
-    //   disableEvents: false,
-    // }
     /**
      * @class Overlay
      */
     constructor() {
         this.element = document.createElement('div');
         this.disableEventsElement = document.createElement('div');
+        this.data = {
+            disableMouseEvents: true,
+            rect: null,
+        };
         this.style = {
             color: 'rgba(0,0,0,.5)',
             borderRadius: 5,
@@ -73,9 +74,13 @@ class Overlay {
             right: '0',
             bottom: '0',
         });
-        EVENTS_LIST.forEach(eventName => {
-            disableEventsElement.addEventListener(eventName, disableMouseEvents, { passive: true, capture: true });
-        });
+        // EVENTS_LIST.forEach(eventName => {
+        //   disableEventsElement.addEventListener(
+        //     eventName,
+        //     disableMouseEvents,
+        //     { passive: true, capture: true },
+        //   )
+        // })
         this.applyStyle();
     }
     // set disableEvents(bool:boolean) {
@@ -120,43 +125,32 @@ class Overlay {
             this.applyStyle();
         });
     }
+    set disableMouseEvents(isDisable) {
+        this.data.disableMouseEvents = isDisable;
+        if (this.rect) {
+            this.updateRect(this.rect);
+        }
+    }
+    get disableMouseEvents() {
+        return this.data.disableMouseEvents;
+    }
+    set rect(rect) {
+        this.data.rect = rect;
+        if (rect) {
+            this.updateRect(rect);
+        }
+        else {
+            this.destroy();
+        }
+    }
+    get rect() {
+        return this.data.rect;
+    }
     /**
      * @returns {HTMLDivElement}
      */
     getElement() {
         return this.element;
-    }
-    /**
-     * @param rect
-     *
-     * @returns {void}
-     */
-    setRect(rect) {
-        if (rect) {
-            this.mount();
-            applyStyle(this.element, {
-                transform: `translate(${rect.x}px, ${rect.y}px)`,
-                width: `${rect.width}px`,
-                height: `${rect.height}px`
-            });
-            // const clipPath = this.disableEvents 
-            //   ? 'none'
-            //   : 'polygon(0% 0%, 0 100%,'
-            //     + `${rect.x}px 100%,`
-            //     + `${rect.x}px ${rect.y}px,`
-            //     + `${rect.x + rect.width}px ${rect.y}px,`
-            //     + `${rect.x + rect.width}px ${rect.y + rect.height}px,`
-            //     + `${rect.x}px ${rect.y + rect.height}px,`
-            //     + `${rect.x}px 100%,`
-            //     + '100% 100%, 100% 0%)'
-            // applyStyle(
-            //   this.disableEventsElement, 
-            //   { clipPath: clipPath, },
-            // )
-        }
-        else {
-            this.destroy();
-        }
     }
     /**
      *
@@ -183,6 +177,30 @@ class Overlay {
         if (hasChild(body, disableEventsElement)) {
             body.removeChild(disableEventsElement);
         }
+    }
+    updateRect(rect) {
+        this.mount();
+        applyStyle(this.element, {
+            transform: `translate(${rect.x}px, ${rect.y}px)`,
+            width: `${rect.width}px`,
+            height: `${rect.height}px`
+        });
+        const disableEventsElementStyle = {
+            clipPath: 'none',
+            willСhange: 'none',
+        };
+        if (!this.disableMouseEvents) {
+            disableEventsElementStyle.clipPath = 'polygon(0% 0%, 0 100%,'
+                + `${rect.x}px 100%,`
+                + `${rect.x}px ${rect.y}px,`
+                + `${rect.x + rect.width}px ${rect.y}px,`
+                + `${rect.x + rect.width}px ${rect.y + rect.height}px,`
+                + `${rect.x}px ${rect.y + rect.height}px,`
+                + `${rect.x}px 100%,`
+                + '100% 100%, 100% 0%)';
+            disableEventsElementStyle.willСhange = 'clip-path';
+        }
+        applyStyle(this.disableEventsElement, disableEventsElementStyle);
     }
     applyStyle() {
         const { style } = this;
@@ -297,7 +315,7 @@ class BoxOverlay {
                     this.rect.height = rect.height;
                 }
             }
-            this.overlay.setRect(this.rect);
+            this.overlay.rect = this.rect;
             /**
              * Called when the position or size of the highlight area has
              * changed

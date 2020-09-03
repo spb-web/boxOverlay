@@ -117,7 +117,7 @@ export class BoxOverlay {
         }
       }
 
-      this.overlay.setRect(this.rect)
+      this.overlay.rect = this.rect
       /**
        * Called when the position or size of the highlight area has
        * changed

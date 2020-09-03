@@ -53,10 +53,11 @@ setInterval(() => {
 - [x] Rounded corner
 - [x] Use [Size Limit](https://github.com/ai/size-limit)
 - [x] Add events
+- [x] Control mouse events
 - [ ] Tests
 - [ ] Stylization with css
 - [ ] Animation
 - [ ] Capture mouse/touch events
-- [ ] Use clip-path
+- [x] Use clip-path
 - [ ] Centrating highlighted area
 - [ ] Optimize scroll
