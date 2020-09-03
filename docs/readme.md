@@ -1,5 +1,4 @@
 [Demo](https://spb-web.github.io/boxOverlay/) |
-[Docs](https://spb-web.github.io/boxOverlay/docs/) |
 [Issues](https://github.com/spb-web/boxOverlay/issues)
 
 CircleCI 
@@ -10,3 +9,31 @@ CircleCI
 npm i @spb-web/box-overlay --save
 ```
 
+## Quick start
+```ts
+// Import
+import BoxOverlay from '@spb-web/box-overlay'
+
+// Create instance
+const boxOverlay = new BoxOverlay()
+
+//
+boxOverlay.on('updateRect', (rect) => {
+  console.log('Update rect', rect)
+})
+
+//
+boxOverlay.start()
+
+// Add selector
+boxOverlay.add(['#text', '#button'])
+
+// Remove selector
+boxOverlay.remove('#text')
+
+//
+boxOverlay.clear()
+
+//
+boxOverlay.stop()
+```

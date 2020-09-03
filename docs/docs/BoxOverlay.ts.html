@@ -7,7 +7,7 @@
   
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>2345678 BoxOverlay.ts</title>
+  <title>@spb-web/box-overlay BoxOverlay.ts</title>
 
   <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -62,6 +62,13 @@
                     
                         <a
                             class="link user-link "
+                            href="https://github.com/spb-web/boxOverlay/issues"
+                        >
+                            Issues
+                        </a>
+                    
+                        <a
+                            class="link user-link "
                             href="https://circleci.com/gh/spb-web/boxOverlay"
                         >
                             CircleCI
@@ -95,7 +102,7 @@
             
             <nav>
                 
-                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Classes</h3><ul><li><a href="BoxOverlay.html">BoxOverlay</a></li><li><a href="Overlay.html">Overlay</a></li><li><a href="Rect_Rect.html">Rect</a></li></ul></div>
+                    <h2><a href="index.html">Documentation</a></h2><div class="category"><h3>Classes</h3><ul><li><a href="BoxOverlay.html">BoxOverlay</a></li><li><a href="Overlay.html">Overlay</a></li><li><a href="Rect_Rect.html">Rect</a></li></ul><h3>Events</h3><ul><li><a href="BoxOverlay.html#event:updateRect">updateRect</a></li></ul></div>
                 
             </nav>
         </div>
@@ -112,12 +119,21 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>import { Overlay } from './Overlay'
+            <pre class="prettyprint source linenums"><code>import { createNanoEvents, Emitter } from 'nanoevents'
+import { Overlay } from './Overlay'
 import { isEqualDOMRect } from './utils'
 import { Rect } from './Rect'
 
 const { MAX_SAFE_INTEGER } = Number
+const updateRect = 'updateRect'
 
+interface Events {
+  [updateRect]: (rect: Rect|null) => void
+}
+
+/**
+ * @class BoxOverlay
+ */
 export class BoxOverlay {
   /**
    * @public
@@ -126,16 +142,7 @@ export class BoxOverlay {
    */
   public readonly overlay = new Overlay()
 
-  /**
-   * @class BoxOverlay
-   * 
-   * @param handleUpdate {Function=}
-   */
-  constructor(handleUpdate = (rect:Rect|null) => {}) {
-    this.handleUpdate = handleUpdate
-  }
-
-  private handleUpdate:(rect:Rect|null) => void
+  private emitter:Emitter = createNanoEvents()
 
   private elementsOrSelectors:(Element|string)[] = []
 
@@ -174,6 +181,10 @@ export class BoxOverlay {
     this.requestAnimationFrameId = -1
 
     this.overlay.destroy()
+  }
+
+  on&lt;E extends keyof Events>(event: E, callback: Events[E]) {
+    return this.emitter.on(event, callback)
   }
 
   private getElements() {
@@ -228,7 +239,14 @@ export class BoxOverlay {
       }
 
       this.overlay.setRect(this.rect)
-      this.handleUpdate(this.rect)
+      /**
+       * Called when the position or size of the highlight area has
+       * changed
+       *
+       * @event BoxOverlay#updateRect
+       * @type {Rect|null}
+       */
+      this.emitter.emit(BoxOverlay.updateRect, this.rect)
     }
 
     this.requestAnimationFrameId = requestAnimationFrame(() => {
@@ -262,6 +280,8 @@ export class BoxOverlay {
 
     return { x, y, width, height }
   }
+
+  static updateRect = updateRect
 }
 </code></pre>
         </article>

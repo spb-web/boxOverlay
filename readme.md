@@ -17,6 +17,8 @@ typescript, modern, can highlight multiple elements
 [![npm bundle size](https://img.shields.io/bundlephobia/minzip/@spb-web/box-overlay?color=%234cc61f)](https://www.npmjs.com/package/@spb-web/box-overlay)
 [![npm version](https://img.shields.io/npm/v/@spb-web/box-overlay?color=%234cc61f)](https://www.npmjs.com/package/@spb-web/box-overlay)
 
+It uses [Size Limit](https://github.com/ai/size-limit) to control size.
+
 ```
 npm i @spb-web/box-overlay --save
 ```
@@ -49,6 +51,8 @@ setInterval(() => {
 - [x] Highlight multiple elements
 - [x] Handle moving elements
 - [x] Rounded corner
+- [x] Use [Size Limit](https://github.com/ai/size-limit)
+- [x] Add events
 - [ ] Tests
 - [ ] Stylization with css
 - [ ] Animation
