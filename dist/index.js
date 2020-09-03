@@ -1,4 +1,4 @@
-import MicroEmitter from 'micro-emitter';
+import { createNanoEvents } from 'nanoevents';
 
 const hasChild = (parent, el) => {
     var child = parent && parent.firstChild;
@@ -217,18 +217,19 @@ class Rect {
 }
 
 const { MAX_SAFE_INTEGER } = Number;
+const updateRect = 'updateRect';
 /**
  * @class BoxOverlay
  */
-class BoxOverlay extends MicroEmitter {
+class BoxOverlay {
     constructor() {
-        super(...arguments);
         /**
          * @public
          * @readonly
          * @property {Overlay} overlay
          */
         this.overlay = new Overlay();
+        this.emitter = createNanoEvents();
         this.elementsOrSelectors = [];
         this.rect = null;
         this.requestAnimationFrameId = -1;
@@ -259,6 +260,9 @@ class BoxOverlay extends MicroEmitter {
         cancelAnimationFrame(this.requestAnimationFrameId);
         this.requestAnimationFrameId = -1;
         this.overlay.destroy();
+    }
+    on(event, callback) {
+        return this.emitter.on(event, callback);
     }
     getElements() {
         return this.elementsOrSelectors.reduce((elements, selectorOrElement) => {
@@ -294,7 +298,14 @@ class BoxOverlay extends MicroEmitter {
                 }
             }
             this.overlay.setRect(this.rect);
-            this.emit(BoxOverlay.updateRect, this.rect);
+            /**
+             * Called when the position or size of the highlight area has
+             * changed
+             *
+             * @event BoxOverlay#updateRect
+             * @type {Rect|null}
+             */
+            this.emitter.emit(BoxOverlay.updateRect, this.rect);
         }
         this.requestAnimationFrameId = requestAnimationFrame(() => {
             this.watch();
@@ -322,6 +333,6 @@ class BoxOverlay extends MicroEmitter {
         return { x, y, width, height };
     }
 }
-BoxOverlay.updateRect = 'updateRect';
+BoxOverlay.updateRect = updateRect;
 
 export { BoxOverlay };
