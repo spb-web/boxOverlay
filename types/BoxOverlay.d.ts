@@ -1,19 +1,15 @@
+import MicroEmitter from 'micro-emitter';
 import { Overlay } from './Overlay';
-import { Rect } from './Rect';
-export declare class BoxOverlay {
+/**
+ * @class BoxOverlay
+ */
+export declare class BoxOverlay extends MicroEmitter {
     /**
      * @public
      * @readonly
      * @property {Overlay} overlay
      */
     readonly overlay: Overlay;
-    /**
-     * @class BoxOverlay
-     *
-     * @param handleUpdate {Function=}
-     */
-    constructor(handleUpdate?: (rect: Rect | null) => void);
-    private handleUpdate;
     private elementsOrSelectors;
     private rect;
     private requestAnimationFrameId;
@@ -38,4 +34,5 @@ export declare class BoxOverlay {
     private getPosition;
     private watch;
     private calcBox;
+    static updateRect: string;
 }

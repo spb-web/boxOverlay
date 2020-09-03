@@ -1,6 +1,5 @@
 //@ts-ignore
 import * as hljs from 'highlight.js/lib/core';
-import 'highlight.js/styles/github.css';
 // @ts-ignore
 import typescript from 'highlight.js/lib/languages/typescript';
 import { BoxOverlay } from '../src'
@@ -11,7 +10,9 @@ hljs.initHighlightingOnLoad();
 // @ts-ignore
 window.BoxOverlay = BoxOverlay
 
-const boxOverlay = new BoxOverlay((rect) => {
+const boxOverlay = new BoxOverlay()
+
+boxOverlay.on('updateRect', (rect) => {
   console.log('Update rect', rect)
 })
 
@@ -23,7 +24,7 @@ const selectors = [
 ]
 
 let prevIndex = 0
-let interval = -1
+let interval:NodeJS.Timeout|undefined
 let run = false
 
 // @ts-ignore
@@ -38,7 +39,10 @@ window.stopExample = function stopExample() {
     (stopButton as HTMLElement).style.display = 'none'
   }
 
-  clearInterval(interval)
+  if (interval) {
+    clearInterval(interval)
+  }
+
   boxOverlay.clear()
   boxOverlay.stop()
   run = false

@@ -1,3 +1,5 @@
+import MicroEmitter from 'micro-emitter';
+
 const hasChild = (parent, el) => {
     var child = parent && parent.firstChild;
     while (child) {
@@ -215,13 +217,12 @@ class Rect {
 }
 
 const { MAX_SAFE_INTEGER } = Number;
-class BoxOverlay {
-    /**
-     * @class BoxOverlay
-     *
-     * @param handleUpdate {Function=}
-     */
-    constructor(handleUpdate = (rect) => { }) {
+/**
+ * @class BoxOverlay
+ */
+class BoxOverlay extends MicroEmitter {
+    constructor() {
+        super(...arguments);
         /**
          * @public
          * @readonly
@@ -231,7 +232,6 @@ class BoxOverlay {
         this.elementsOrSelectors = [];
         this.rect = null;
         this.requestAnimationFrameId = -1;
-        this.handleUpdate = handleUpdate;
     }
     /**
      *
@@ -294,7 +294,7 @@ class BoxOverlay {
                 }
             }
             this.overlay.setRect(this.rect);
-            this.handleUpdate(this.rect);
+            this.emit(BoxOverlay.updateRect, this.rect);
         }
         this.requestAnimationFrameId = requestAnimationFrame(() => {
             this.watch();
@@ -322,5 +322,6 @@ class BoxOverlay {
         return { x, y, width, height };
     }
 }
+BoxOverlay.updateRect = 'updateRect';
 
 export { BoxOverlay };

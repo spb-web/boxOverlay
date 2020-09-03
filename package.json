@@ -27,10 +27,13 @@
     "highlight.js": "^10.1.2",
     "jsdoc": "^3.6.5",
     "rollup": "^2.26.3",
+    "rollup-plugin-node-resolve": "^5.2.0",
     "tslib": "^2.0.1",
     "typescript": "^3.9.7"
   },
-  "dependencies": {},
+  "dependencies": {
+    "nanoevents": "^5.1.8"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/spb-web/boxOverlay.git"

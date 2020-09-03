@@ -1,9 +1,18 @@
+import { createNanoEvents, Emitter } from 'nanoevents'
 import { Overlay } from './Overlay'
 import { isEqualDOMRect } from './utils'
 import { Rect } from './Rect'
 
 const { MAX_SAFE_INTEGER } = Number
+const updateRect = 'updateRect'
 
+interface Events {
+  [updateRect]: (rect: Rect|null) => void
+}
+
+/**
+ * @class BoxOverlay
+ */
 export class BoxOverlay {
   /**
    * @public
@@ -12,16 +21,7 @@ export class BoxOverlay {
    */
   public readonly overlay = new Overlay()
 
-  /**
-   * @class BoxOverlay
-   * 
-   * @param handleUpdate {Function=}
-   */
-  constructor(handleUpdate = (rect:Rect|null) => {}) {
-    this.handleUpdate = handleUpdate
-  }
-
-  private handleUpdate:(rect:Rect|null) => void
+  private emitter:Emitter = createNanoEvents()
 
   private elementsOrSelectors:(Element|string)[] = []
 
@@ -60,6 +60,10 @@ export class BoxOverlay {
     this.requestAnimationFrameId = -1
 
     this.overlay.destroy()
+  }
+
+  on<E extends keyof Events>(event: E, callback: Events[E]) {
+    return this.emitter.on(event, callback)
   }
 
   private getElements() {
@@ -114,7 +118,14 @@ export class BoxOverlay {
       }
 
       this.overlay.setRect(this.rect)
-      this.handleUpdate(this.rect)
+      /**
+       * Called when the position or size of the highlight area has
+       * changed
+       *
+       * @event BoxOverlay#updateRect
+       * @type {Rect|null}
+       */
+      this.emitter.emit(BoxOverlay.updateRect, this.rect)
     }
 
     this.requestAnimationFrameId = requestAnimationFrame(() => {
@@ -148,4 +159,6 @@ export class BoxOverlay {
 
     return { x, y, width, height }
   }
+
+  static updateRect = updateRect
 }
