@@ -2527,33 +2527,34 @@
               && firstDOMRect.width === secondDOMRect.width
               && firstDOMRect.height === secondDOMRect.height))); };
 
-  var disableMouseEvents = function (event) {
-      event.stopPropagation();
-  };
-  var EVENTS_LIST = [
-      'click',
-      'mousedown',
-      'mouseenter',
-      'mouseleave',
-      'mousemove',
-      'mouseout',
-      'mouseover',
-      'mouseup',
-      'touchcancel',
-      'touchend',
-      'touchmove',
-      'touchstart',
-  ];
+  // const disableMouseEvents = (event:Event) => {
+  //   event.stopPropagation()
+  // }
+  // const EVENTS_LIST:(keyof GlobalEventHandlersEventMap)[] = [
+  //   'click',
+  //   'mousedown',
+  //   'mouseenter',
+  //   'mouseleave',
+  //   'mousemove',
+  //   'mouseout',
+  //   'mouseover',
+  //   'mouseup',
+  //   'touchcancel',
+  //   'touchend',
+  //   'touchmove',
+  //   'touchstart',
+  // ]
   var Overlay = /** @class */ (function () {
-      // private option = {
-      //   disableEvents: false,
-      // }
       /**
        * @class Overlay
        */
       function Overlay() {
           this.element = document.createElement('div');
           this.disableEventsElement = document.createElement('div');
+          this.data = {
+              disableMouseEvents: true,
+              rect: null,
+          };
           this.style = {
               color: 'rgba(0,0,0,.5)',
               borderRadius: 5,
@@ -2570,9 +2571,13 @@
               right: '0',
               bottom: '0',
           });
-          EVENTS_LIST.forEach(function (eventName) {
-              disableEventsElement.addEventListener(eventName, disableMouseEvents, { passive: true, capture: true });
-          });
+          // EVENTS_LIST.forEach(eventName => {
+          //   disableEventsElement.addEventListener(
+          //     eventName,
+          //     disableMouseEvents,
+          //     { passive: true, capture: true },
+          //   )
+          // })
           this.applyStyle();
       }
       Object.defineProperty(Overlay.prototype, "color", {
@@ -2632,43 +2637,40 @@
           enumerable: false,
           configurable: true
       });
+      Object.defineProperty(Overlay.prototype, "disableMouseEvents", {
+          get: function () {
+              return this.data.disableMouseEvents;
+          },
+          set: function (isDisable) {
+              this.data.disableMouseEvents = isDisable;
+              if (this.rect) {
+                  this.updateRect(this.rect);
+              }
+          },
+          enumerable: false,
+          configurable: true
+      });
+      Object.defineProperty(Overlay.prototype, "rect", {
+          get: function () {
+              return this.data.rect;
+          },
+          set: function (rect) {
+              this.data.rect = rect;
+              if (rect) {
+                  this.updateRect(rect);
+              }
+              else {
+                  this.destroy();
+              }
+          },
+          enumerable: false,
+          configurable: true
+      });
       /**
        * @returns {HTMLDivElement}
        */
       Overlay.prototype.getElement = function () {
           return this.element;
-      };
-      /**
-       * @param rect
-       *
-       * @returns {void}
-       */
-      Overlay.prototype.setRect = function (rect) {
-          if (rect) {
-              this.mount();
-              applyStyle(this.element, {
-                  transform: "translate(" + rect.x + "px, " + rect.y + "px)",
-                  width: rect.width + "px",
-                  height: rect.height + "px"
-              });
-              // const clipPath = this.disableEvents 
-              //   ? 'none'
-              //   : 'polygon(0% 0%, 0 100%,'
-              //     + `${rect.x}px 100%,`
-              //     + `${rect.x}px ${rect.y}px,`
-              //     + `${rect.x + rect.width}px ${rect.y}px,`
-              //     + `${rect.x + rect.width}px ${rect.y + rect.height}px,`
-              //     + `${rect.x}px ${rect.y + rect.height}px,`
-              //     + `${rect.x}px 100%,`
-              //     + '100% 100%, 100% 0%)'
-              // applyStyle(
-              //   this.disableEventsElement, 
-              //   { clipPath: clipPath, },
-              // )
-          }
-          else {
-              this.destroy();
-          }
       };
       /**
        *
@@ -2695,6 +2697,30 @@
           if (hasChild(body, disableEventsElement)) {
               body.removeChild(disableEventsElement);
           }
+      };
+      Overlay.prototype.updateRect = function (rect) {
+          this.mount();
+          applyStyle(this.element, {
+              transform: "translate(" + rect.x + "px, " + rect.y + "px)",
+              width: rect.width + "px",
+              height: rect.height + "px"
+          });
+          var disableEventsElementStyle = {
+              clipPath: 'none',
+              willСhange: 'none',
+          };
+          if (!this.disableMouseEvents) {
+              disableEventsElementStyle.clipPath = 'polygon(0% 0%, 0 100%,'
+                  + (rect.x + "px 100%,")
+                  + (rect.x + "px " + rect.y + "px,")
+                  + (rect.x + rect.width + "px " + rect.y + "px,")
+                  + (rect.x + rect.width + "px " + (rect.y + rect.height) + "px,")
+                  + (rect.x + "px " + (rect.y + rect.height) + "px,")
+                  + (rect.x + "px 100%,")
+                  + '100% 100%, 100% 0%)';
+              disableEventsElementStyle.willСhange = 'clip-path';
+          }
+          applyStyle(this.disableEventsElement, disableEventsElementStyle);
       };
       Overlay.prototype.applyStyle = function () {
           var style = this.style;
@@ -2816,7 +2842,7 @@
                       this.rect.height = rect.height;
                   }
               }
-              this.overlay.setRect(this.rect);
+              this.overlay.rect = this.rect;
               /**
                * Called when the position or size of the highlight area has
                * changed
