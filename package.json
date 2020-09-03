@@ -6,9 +6,10 @@
   "typings": "types/index",
   "scripts": {
     "build": "rm ./types -rf && rollup --config rollup.config.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "npm run size",
     "build-demo": "rollup --config rollup.demo.config.js",
     "docs": "jsdoc -c jsdoc.json",
+    "size": "npm run build && size-limit",
     "release:major": "changelog -M && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version major && git push origin && git push origin --tags",
     "release:minor": "changelog -m && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version minor && git push origin && git push origin --tags",
     "release:patch": "changelog -p && git add CHANGELOG.md && git commit -m 'updated CHANGELOG.md' && npm version patch && git push origin && git push origin --tags",
@@ -21,6 +22,8 @@
   "devDependencies": {
     "@rollup/plugin-commonjs": "^15.0.0",
     "@rollup/plugin-typescript": "^5.0.2",
+    "@size-limit/preset-small-lib": "^4.5.7",
+    "@size-limit/time": "^4.5.7",
     "better-docs": "^2.3.0",
     "cypress": "^5.0.0",
     "generate-changelog": "^1.8.0",
@@ -28,6 +31,7 @@
     "jsdoc": "^3.6.5",
     "rollup": "^2.26.3",
     "rollup-plugin-node-resolve": "^5.2.0",
+    "size-limit": "^4.5.7",
     "tslib": "^2.0.1",
     "typescript": "^3.9.7"
   },
