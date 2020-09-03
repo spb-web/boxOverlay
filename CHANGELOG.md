@@ -1,3 +1,20 @@
+#### 0.2.2 (2020-09-03)
+
+##### Chores
+
+*  update size limit ([bfeda0d6](https://github.com/spb-web/boxOverlay/commit/bfeda0d6404080297c767b174b3025be38a5364e))
+*  update .npmignore ([73f556a3](https://github.com/spb-web/boxOverlay/commit/73f556a32ae88e929f10f33ba2058f38d22a23d5))
+*  update readme, CHANGELOG.md ([a8d2072f](https://github.com/spb-web/boxOverlay/commit/a8d2072fc8edce88d0030be676d33d5a043d0395))
+
+##### New Features
+
+*  update docs ([80ab0f43](https://github.com/spb-web/boxOverlay/commit/80ab0f43a705bf75930bb4af061a6be9176bbede))
+*  added control mouse events, used clip-path ([abb7e061](https://github.com/spb-web/boxOverlay/commit/abb7e061eafdc3aba34d0cf69211e45ac66d5968))
+
+##### Bug Fixes
+
+*  fixed demo ([85a05a1e](https://github.com/spb-web/boxOverlay/commit/85a05a1eb5e9ed0d0763fb42674aaf7b86911a4a))
+
 ### 0.2.0 (2020-09-03)
 
 ##### Chores
