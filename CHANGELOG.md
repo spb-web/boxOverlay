@@ -1,3 +1,9 @@
+#### 0.4.1 (2021-01-20)
+
+##### Bug Fixes
+
+*  fixed Rect ([405b64ea](https://github.com/spb-web/boxOverlay/commit/405b64ea7932234c9a06770ee61aafb2e69d9ab3))
+
 ### 0.4.0 (2021-01-20)
 
 ##### Chores
