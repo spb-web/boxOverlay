@@ -14,4 +14,20 @@ export declare class Rect {
      * @property {number} height
      */
     constructor(x?: number, y?: number, width?: number, height?: number);
+    /**
+     * @property {number} top
+     */
+    get top(): number;
+    /**
+     * @property {number} bottom
+     */
+    get bottom(): number;
+    /**
+     * @property {number} left
+     */
+    get left(): number;
+    /**
+     * @property {number} right
+     */
+    get right(): number;
 }

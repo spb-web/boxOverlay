@@ -40,6 +40,30 @@ class Rect {
         this.width = width;
         this.height = height;
     }
+    /**
+     * @property {number} top
+     */
+    get top() {
+        return this.y + Math.min(0, this.height);
+    }
+    /**
+     * @property {number} bottom
+     */
+    get bottom() {
+        return this.y + Math.max(0, this.height);
+    }
+    /**
+     * @property {number} left
+     */
+    get left() {
+        return this.x + Math.min(0, this.width);
+    }
+    /**
+     * @property {number} right
+     */
+    get right() {
+        return this.x + Math.max(0, this.width);
+    }
 }
 
 class Overlay {
@@ -246,7 +270,7 @@ const updateRect = 'updateRect';
  *   console.log('Update rect', rect)
  * })
  *
- * boxOverlay.add(ELEMENT_TO_BE_SELECTED)
+ * boxOverlay.add(ELEMENT_TO_BE_HIGHLIGHTED)
  * boxOverlay.start()
  *
  * setTimeout(() => {

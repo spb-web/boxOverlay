@@ -13,7 +13,7 @@ interface Events {
  *   console.log('Update rect', rect)
  * })
  *
- * boxOverlay.add(ELEMENT_TO_BE_SELECTED)
+ * boxOverlay.add(ELEMENT_TO_BE_HIGHLIGHTED)
  * boxOverlay.start()
  *
  * setTimeout(() => {
