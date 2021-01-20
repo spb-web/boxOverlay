@@ -1,3 +1,13 @@
+#### 0.4.2 (2021-01-20)
+
+##### Chores
+
+*  update types ([5743363b](https://github.com/spb-web/boxOverlay/commit/5743363bdd1be018fc96e150795cd41932636cba))
+
+##### Bug Fixes
+
+*  fixed Rect ([405b64ea](https://github.com/spb-web/boxOverlay/commit/405b64ea7932234c9a06770ee61aafb2e69d9ab3))
+
 #### 0.4.1 (2021-01-20)
 
 ##### Bug Fixes
