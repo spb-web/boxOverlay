@@ -20,6 +20,10 @@
       "dom",
       "dom.iterable",
       "scripthost"
+    ],
+    "types": [
+      "node",
+      "resize-observer-browser"
     ]
   },
   "exclude": [

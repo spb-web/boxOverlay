@@ -12,6 +12,20 @@ interface Events {
 
 /**
  * @class BoxOverlay
+ * @example ```
+ * const boxOverlay = new BoxOverlay()
+ *
+ * boxOverlay.on('updateRect', (rect) => {
+ *   console.log('Update rect', rect)
+ * })
+ *
+ * boxOverlay.add(ELEMENT_TO_BE_HIGHLIGHTED)
+ * boxOverlay.start()
+ * 
+ * setTimeout(() => {
+ *   boxOverlay.stop()
+ * }, 5000)
+ * ```
  */
 export class BoxOverlay {
   /**
@@ -117,7 +131,7 @@ export class BoxOverlay {
         }
       }
 
-      this.overlay.rect = this.rect
+      this.overlay.rect = this.rect ? this.rect : new Rect()
       /**
        * Called when the position or size of the highlight area has
        * changed

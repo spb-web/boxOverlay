@@ -15,13 +15,6 @@ const applyStyle = (element, styles) => {
         element.style[key] = value;
     });
 };
-const setDefaultOverlayStyles = (element) => {
-    applyStyle(element, {
-        position: `fixed`,
-        left: '0',
-        top: '0',
-    });
-};
 const isEqualDOMRect = (firstDOMRect, secondDOMRect) => ((firstDOMRect === null && secondDOMRect === null)
     || (firstDOMRect
         && secondDOMRect
@@ -30,65 +23,52 @@ const isEqualDOMRect = (firstDOMRect, secondDOMRect) => ((firstDOMRect === null 
             && firstDOMRect.width === secondDOMRect.width
             && firstDOMRect.height === secondDOMRect.height)));
 
-// const disableMouseEvents = (event:Event) => {
-//   event.stopPropagation()
-// }
-// const EVENTS_LIST:(keyof GlobalEventHandlersEventMap)[] = [
-//   'click',
-//   'mousedown',
-//   'mouseenter',
-//   'mouseleave',
-//   'mousemove',
-//   'mouseout',
-//   'mouseover',
-//   'mouseup',
-//   'touchcancel',
-//   'touchend',
-//   'touchmove',
-//   'touchstart',
-// ]
+class Rect {
+    /**
+     * @param {number=} x
+     * @param {number=} y
+     * @param {number=} width
+     * @param {number=} height
+     * @property {number} x
+     * @property {number} y
+     * @property {number} width
+     * @property {number} height
+     */
+    constructor(x = 0, y = 0, width = 0, height = 0) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+    }
+}
+
 class Overlay {
     /**
      * @class Overlay
      */
     constructor() {
-        this.element = document.createElement('div');
+        this.canvas = document.createElement('canvas');
+        this.resizeObserver = new ResizeObserver((entries) => this.handleResize(entries));
         this.disableEventsElement = document.createElement('div');
+        this.requestAnimationFrameId = null;
         this.data = {
             disableMouseEvents: true,
-            rect: null,
+            rect: new Rect(),
         };
         this.style = {
             color: 'rgba(0,0,0,.5)',
             borderRadius: 5,
             zIndex: 10000,
         };
-        const { element, disableEventsElement } = this;
-        setDefaultOverlayStyles(element);
-        applyStyle(element, {
-            pointerEvents: 'none',
-            willСhange: 'transform, width, height',
-        });
-        setDefaultOverlayStyles(disableEventsElement);
-        applyStyle(disableEventsElement, {
-            right: '0',
-            bottom: '0',
-        });
-        // EVENTS_LIST.forEach(eventName => {
-        //   disableEventsElement.addEventListener(
-        //     eventName,
-        //     disableMouseEvents,
-        //     { passive: true, capture: true },
-        //   )
-        // })
-        this.applyStyle();
+        const { canvas } = this;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+            throw new Error();
+        }
+        this.ctx = ctx;
+        this.resizeObserver.observe(canvas);
+        this.applyCanvasStyle();
     }
-    // set disableEvents(bool:boolean) {
-    //   this.option.disableEvents = bool
-    // }
-    // get disableEvents() {
-    //   return this.option.disableEvents
-    // }
     /**
      *
      */
@@ -97,9 +77,7 @@ class Overlay {
     }
     set color(color) {
         this.style.color = color;
-        requestAnimationFrame(() => {
-            this.applyStyle();
-        });
+        this.draw();
     }
     /**
      *
@@ -109,9 +87,7 @@ class Overlay {
     }
     set borderRadius(radius) {
         this.style.borderRadius = radius;
-        requestAnimationFrame(() => {
-            this.applyStyle();
-        });
+        this.draw();
     }
     /**
      * @returns {number}
@@ -122,7 +98,7 @@ class Overlay {
     set zIndex(zIndex) {
         this.style.zIndex = zIndex;
         requestAnimationFrame(() => {
-            this.applyStyle();
+            this.applyCanvasStyle();
         });
     }
     set disableMouseEvents(isDisable) {
@@ -147,19 +123,19 @@ class Overlay {
         return this.data.rect;
     }
     /**
-     * @returns {HTMLDivElement}
+     * @returns {HTMLCanvasElement}
      */
-    getElement() {
-        return this.element;
+    getCanvas() {
+        return this.canvas;
     }
     /**
      *
      */
     mount() {
-        const { element, disableEventsElement } = this;
+        const { canvas, disableEventsElement } = this;
         const { body } = document;
-        if (!hasChild(body, element)) {
-            body.appendChild(element);
+        if (!hasChild(body, canvas)) {
+            body.appendChild(canvas);
         }
         if (!hasChild(body, disableEventsElement)) {
             body.appendChild(disableEventsElement);
@@ -169,22 +145,77 @@ class Overlay {
      *
      */
     destroy() {
-        const { element, disableEventsElement } = this;
+        const { canvas, disableEventsElement } = this;
         const { body } = document;
-        if (hasChild(body, element)) {
-            body.removeChild(element);
+        if (hasChild(body, canvas)) {
+            body.removeChild(canvas);
         }
         if (hasChild(body, disableEventsElement)) {
             body.removeChild(disableEventsElement);
         }
     }
+    applyCanvasStyle() {
+        const { canvas, disableEventsElement } = this;
+        applyStyle(canvas, {
+            zIndex: this.style.zIndex.toString(10),
+            pointerEvents: 'none',
+            position: 'fixed',
+            width: '100%',
+            height: '100%',
+            left: '0',
+            top: '0',
+        });
+        applyStyle(disableEventsElement, {
+            position: 'fixed',
+            left: '0',
+            top: '0',
+            bottom: '0',
+            right: '0',
+        });
+    }
+    draw() {
+        const { requestAnimationFrameId, ctx, canvas: { width: canvasWidth, height: canvasHeight } } = this;
+        if (requestAnimationFrameId) {
+            cancelAnimationFrame(requestAnimationFrameId);
+        }
+        this.requestAnimationFrameId = requestAnimationFrame(() => {
+            const { devicePixelRatio } = window;
+            // Background
+            ctx.globalCompositeOperation = 'copy';
+            ctx.fillStyle = this.style.color;
+            ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+            // Window
+            ctx.globalCompositeOperation = 'destination-out';
+            const x = this.data.rect.x * devicePixelRatio;
+            const y = this.data.rect.y * devicePixelRatio;
+            const width = this.data.rect.width * devicePixelRatio;
+            const height = this.data.rect.height * devicePixelRatio;
+            const radius = this.style.borderRadius * devicePixelRatio;
+            ctx.beginPath();
+            ctx.moveTo(x + radius, y);
+            ctx.lineTo(x + width - radius, y);
+            ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+            ctx.lineTo(x + width, y + height - radius);
+            ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+            ctx.lineTo(x + radius, y + height);
+            ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+            ctx.lineTo(x, y + radius);
+            ctx.quadraticCurveTo(x, y, x + radius, y);
+            ctx.closePath();
+            ctx.fillStyle = '#000';
+            ctx.fill();
+        });
+    }
+    handleResize([{ contentRect: { width, height } }]) {
+        const { canvas } = this;
+        const { devicePixelRatio } = window;
+        canvas.width = width * devicePixelRatio;
+        canvas.height = height * devicePixelRatio;
+        this.draw();
+    }
     updateRect(rect) {
         this.mount();
-        applyStyle(this.element, {
-            transform: `translate(${rect.x}px, ${rect.y}px)`,
-            width: `${rect.width}px`,
-            height: `${rect.height}px`
-        });
+        this.draw();
         const disableEventsElementStyle = {
             clipPath: 'none',
             willСhange: 'none',
@@ -202,42 +233,26 @@ class Overlay {
         }
         applyStyle(this.disableEventsElement, disableEventsElementStyle);
     }
-    applyStyle() {
-        const { style } = this;
-        applyStyle(this.element, {
-            boxShadow: `0 0 0 40000px ${style.color}`,
-            borderRadius: `${style.borderRadius}px`,
-            zIndex: `${style.zIndex}`,
-        });
-        applyStyle(this.disableEventsElement, {
-            zIndex: `${style.zIndex + 1}`,
-        });
-    }
-}
-
-class Rect {
-    /**
-     * @param {number=} x
-     * @param {number=} y
-     * @param {number=} width
-     * @param {number=} height
-     * @property {number} x
-     * @property {number} y
-     * @property {number} width
-     * @property {number} height
-     */
-    constructor(x = 0, y = 0, width = 0, height = 0) {
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
-    }
 }
 
 const { MAX_SAFE_INTEGER } = Number;
 const updateRect = 'updateRect';
 /**
  * @class BoxOverlay
+ * @example ```
+ * const boxOverlay = new BoxOverlay()
+ *
+ * boxOverlay.on('updateRect', (rect) => {
+ *   console.log('Update rect', rect)
+ * })
+ *
+ * boxOverlay.add(ELEMENT_TO_BE_SELECTED)
+ * boxOverlay.start()
+ *
+ * setTimeout(() => {
+ *   boxOverlay.stop()
+ * }, 5000)
+ * ```
  */
 class BoxOverlay {
     constructor() {
@@ -315,7 +330,7 @@ class BoxOverlay {
                     this.rect.height = rect.height;
                 }
             }
-            this.overlay.rect = this.rect;
+            this.overlay.rect = this.rect ? this.rect : new Rect();
             /**
              * Called when the position or size of the highlight area has
              * changed
@@ -353,4 +368,4 @@ class BoxOverlay {
 }
 BoxOverlay.updateRect = updateRect;
 
-export { BoxOverlay };
+export { BoxOverlay, Overlay, Rect };

@@ -1,13 +1,16 @@
 import { Rect } from './Rect';
 export declare class Overlay {
-    private element;
-    private disableEventsElement;
-    private data;
+    private readonly canvas;
+    private readonly resizeObserver;
+    private readonly ctx;
+    private readonly disableEventsElement;
+    private requestAnimationFrameId;
+    private readonly data;
+    private readonly style;
     /**
      * @class Overlay
      */
     constructor();
-    private style;
     /**
      *
      */
@@ -25,12 +28,12 @@ export declare class Overlay {
     set zIndex(zIndex: number);
     set disableMouseEvents(isDisable: boolean);
     get disableMouseEvents(): boolean;
-    set rect(rect: Rect | null);
-    get rect(): Rect | null;
+    set rect(rect: Rect);
+    get rect(): Rect;
     /**
-     * @returns {HTMLDivElement}
+     * @returns {HTMLCanvasElement}
      */
-    getElement(): HTMLDivElement;
+    getCanvas(): HTMLCanvasElement;
     /**
      *
      */
@@ -39,6 +42,8 @@ export declare class Overlay {
      *
      */
     destroy(): void;
+    private applyCanvasStyle;
+    private draw;
+    private handleResize;
     private updateRect;
-    private applyStyle;
 }

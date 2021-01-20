@@ -1,6 +1,6 @@
 {
   "name": "@spb-web/box-overlay",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "no dependencies, works with animated elements, simple api, typescript, modern, can highlight multiple elements",
   "main": "dist/index.js",
   "typings": "types/index",
@@ -24,6 +24,7 @@
     "@rollup/plugin-typescript": "^5.0.2",
     "@size-limit/preset-small-lib": "^4.5.7",
     "@size-limit/time": "^4.5.7",
+    "@types/resize-observer-browser": "^0.1.5",
     "better-docs": "^2.3.0",
     "cypress": "^5.0.0",
     "generate-changelog": "^1.8.0",

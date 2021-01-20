@@ -6,6 +6,20 @@ interface Events {
 }
 /**
  * @class BoxOverlay
+ * @example ```
+ * const boxOverlay = new BoxOverlay()
+ *
+ * boxOverlay.on('updateRect', (rect) => {
+ *   console.log('Update rect', rect)
+ * })
+ *
+ * boxOverlay.add(ELEMENT_TO_BE_SELECTED)
+ * boxOverlay.start()
+ *
+ * setTimeout(() => {
+ *   boxOverlay.stop()
+ * }, 5000)
+ * ```
  */
 export declare class BoxOverlay {
     /**

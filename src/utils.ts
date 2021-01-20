@@ -21,14 +21,6 @@ export const applyStyle = <T extends Partial<CSSStyleDeclaration>>(
   })
 }
 
-export const setDefaultOverlayStyles = (element:HTMLElement) => {
-  applyStyle(element, {
-    position: `fixed`,
-    left: '0',
-    top: '0',
-  })
-}
-
 export const isEqualDOMRect = (
   firstDOMRect:{x:number, y:number, width:number, height: number}|null,
   secondDOMRect:{x:number, y:number, width:number, height: number}|null,

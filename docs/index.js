@@ -2512,13 +2512,6 @@
           element.style[key] = value;
       });
   };
-  var setDefaultOverlayStyles = function (element) {
-      applyStyle(element, {
-          position: "fixed",
-          left: '0',
-          top: '0',
-      });
-  };
   var isEqualDOMRect = function (firstDOMRect, secondDOMRect) { return ((firstDOMRect === null && secondDOMRect === null)
       || (firstDOMRect
           && secondDOMRect
@@ -2527,29 +2520,14 @@
               && firstDOMRect.width === secondDOMRect.width
               && firstDOMRect.height === secondDOMRect.height))); };
 
-  // const disableMouseEvents = (event:Event) => {
-  //   event.stopPropagation()
-  // }
-  // const EVENTS_LIST:(keyof GlobalEventHandlersEventMap)[] = [
-  //   'click',
-  //   'mousedown',
-  //   'mouseenter',
-  //   'mouseleave',
-  //   'mousemove',
-  //   'mouseout',
-  //   'mouseover',
-  //   'mouseup',
-  //   'touchcancel',
-  //   'touchend',
-  //   'touchmove',
-  //   'touchstart',
-  // ]
   var Overlay = /** @class */ (function () {
       /**
        * @class Overlay
        */
       function Overlay() {
-          this.element = document.createElement('div');
+          var _this = this;
+          this.canvas = document.createElement('canvas');
+          this.resizeObserver = new ResizeObserver(function (entries) { return _this.handleResize(entries); });
           this.disableEventsElement = document.createElement('div');
           this.data = {
               disableMouseEvents: true,
@@ -2560,33 +2538,68 @@
               borderRadius: 5,
               zIndex: 10000,
           };
-          var _a = this, element = _a.element, disableEventsElement = _a.disableEventsElement;
-          setDefaultOverlayStyles(element);
-          applyStyle(element, {
-              pointerEvents: 'none',
-              willСhange: 'transform, width, height',
-          });
-          setDefaultOverlayStyles(disableEventsElement);
+          var _a = this, canvas = _a.canvas, disableEventsElement = _a.disableEventsElement;
+          var ctx = canvas.getContext('2d');
+          if (!ctx) {
+              throw new Error();
+          }
+          this.ctx = ctx;
+          this.resizeObserver.observe(canvas);
+          this.applyCanvasStyle();
           applyStyle(disableEventsElement, {
-              right: '0',
+              position: 'fixed',
+              left: '0',
+              top: '0',
               bottom: '0',
+              right: '0',
           });
-          // EVENTS_LIST.forEach(eventName => {
-          //   disableEventsElement.addEventListener(
-          //     eventName,
-          //     disableMouseEvents,
-          //     { passive: true, capture: true },
-          //   )
-          // })
-          this.applyStyle();
       }
+      Overlay.prototype.applyCanvasStyle = function () {
+          var canvas = this.canvas;
+          applyStyle(canvas, {
+              zIndex: this.style.zIndex.toString(10),
+              pointerEvents: 'none',
+              position: 'fixed',
+              width: '100%',
+              height: '100%',
+              left: '0',
+              top: '0',
+          });
+      };
+      Overlay.prototype.draw = function () {
+          var _a, _b, _c, _d;
+          var _e = this, ctx = _e.ctx, _f = _e.canvas, canvasWidth = _f.width, canvasHeight = _f.height;
+          ctx.globalCompositeOperation = 'copy';
+          ctx.fillStyle = this.style.color;
+          ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+          ctx.globalCompositeOperation = 'destination-out';
+          var x = (((_a = this.data.rect) === null || _a === void 0 ? void 0 : _a.x) || 0);
+          var y = (((_b = this.data.rect) === null || _b === void 0 ? void 0 : _b.y) || 0);
+          var width = (((_c = this.data.rect) === null || _c === void 0 ? void 0 : _c.width) || 0);
+          var height = (((_d = this.data.rect) === null || _d === void 0 ? void 0 : _d.height) || 0);
+          var radius = this.style.borderRadius;
+          ctx.beginPath();
+          ctx.moveTo(x + radius, y);
+          ctx.lineTo(x + width - radius, y);
+          ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+          ctx.lineTo(x + width, y + height - radius);
+          ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+          ctx.lineTo(x + radius, y + height);
+          ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+          ctx.lineTo(x, y + radius);
+          ctx.quadraticCurveTo(x, y, x + radius, y);
+          ctx.closePath();
+          ctx.fillStyle = '#000';
+          ctx.fill();
+      };
+      Overlay.prototype.handleResize = function (_a) {
+          var _b = __read(_a, 1), _c = _b[0].contentRect, width = _c.width, height = _c.height;
+          var canvas = this.canvas;
+          canvas.width = width;
+          canvas.height = height;
+          this.draw();
+      };
       Object.defineProperty(Overlay.prototype, "color", {
-          // set disableEvents(bool:boolean) {
-          //   this.option.disableEvents = bool
-          // }
-          // get disableEvents() {
-          //   return this.option.disableEvents
-          // }
           /**
            *
            */
@@ -2594,11 +2607,8 @@
               return this.style.color;
           },
           set: function (color) {
-              var _this = this;
               this.style.color = color;
-              requestAnimationFrame(function () {
-                  _this.applyStyle();
-              });
+              this.draw();
           },
           enumerable: false,
           configurable: true
@@ -2611,11 +2621,8 @@
               return this.style.borderRadius;
           },
           set: function (radius) {
-              var _this = this;
               this.style.borderRadius = radius;
-              requestAnimationFrame(function () {
-                  _this.applyStyle();
-              });
+              this.draw();
           },
           enumerable: false,
           configurable: true
@@ -2631,7 +2638,7 @@
               var _this = this;
               this.style.zIndex = zIndex;
               requestAnimationFrame(function () {
-                  _this.applyStyle();
+                  _this.applyCanvasStyle();
               });
           },
           enumerable: false,
@@ -2667,19 +2674,19 @@
           configurable: true
       });
       /**
-       * @returns {HTMLDivElement}
+       * @returns {HTMLCanvasElement}
        */
       Overlay.prototype.getElement = function () {
-          return this.element;
+          return this.canvas;
       };
       /**
        *
        */
       Overlay.prototype.mount = function () {
-          var _a = this, element = _a.element, disableEventsElement = _a.disableEventsElement;
+          var _a = this, canvas = _a.canvas, disableEventsElement = _a.disableEventsElement;
           var body = document.body;
-          if (!hasChild(body, element)) {
-              body.appendChild(element);
+          if (!hasChild(body, canvas)) {
+              body.appendChild(canvas);
           }
           if (!hasChild(body, disableEventsElement)) {
               body.appendChild(disableEventsElement);
@@ -2689,10 +2696,10 @@
        *
        */
       Overlay.prototype.destroy = function () {
-          var _a = this, element = _a.element, disableEventsElement = _a.disableEventsElement;
+          var _a = this, canvas = _a.canvas, disableEventsElement = _a.disableEventsElement;
           var body = document.body;
-          if (hasChild(body, element)) {
-              body.removeChild(element);
+          if (hasChild(body, canvas)) {
+              body.removeChild(canvas);
           }
           if (hasChild(body, disableEventsElement)) {
               body.removeChild(disableEventsElement);
@@ -2700,11 +2707,7 @@
       };
       Overlay.prototype.updateRect = function (rect) {
           this.mount();
-          applyStyle(this.element, {
-              transform: "translate(" + rect.x + "px, " + rect.y + "px)",
-              width: rect.width + "px",
-              height: rect.height + "px"
-          });
+          this.draw();
           var disableEventsElementStyle = {
               clipPath: 'none',
               willСhange: 'none',
@@ -2721,17 +2724,6 @@
               disableEventsElementStyle.willСhange = 'clip-path';
           }
           applyStyle(this.disableEventsElement, disableEventsElementStyle);
-      };
-      Overlay.prototype.applyStyle = function () {
-          var style = this.style;
-          applyStyle(this.element, {
-              boxShadow: "0 0 0 40000px " + style.color,
-              borderRadius: style.borderRadius + "px",
-              zIndex: "" + style.zIndex,
-          });
-          applyStyle(this.disableEventsElement, {
-              zIndex: "" + (style.zIndex + 1),
-          });
       };
       return Overlay;
   }());
