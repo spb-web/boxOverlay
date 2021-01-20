@@ -15,4 +15,32 @@ export class Rect {
     public width: number = 0,
     public height: number = 0,
   ) {}
+
+  /**
+   * @property {number} top
+   */
+  public get top() {
+    return this.y + Math.min(0, this.height)
+  }
+
+  /**
+   * @property {number} bottom
+   */
+  public get bottom() {
+    return this.y + Math.max(0, this.height)
+  }
+
+  /**
+   * @property {number} left
+   */
+  public get left() {
+    return this.x + Math.min(0, this.width)
+  }
+
+  /**
+   * @property {number} right
+   */
+  public get right() {
+    return this.x + Math.max(0, this.width)
+  }
 }

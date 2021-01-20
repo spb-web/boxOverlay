@@ -55,9 +55,8 @@ setInterval(() => {
 - [x] Add events
 - [x] Control mouse events
 - [ ] Tests
-- [ ] Stylization with css
 - [ ] Animation
-- [ ] Capture mouse/touch events
+- [x] Capture mouse/touch events
 - [x] Use clip-path
 - [ ] Centrating highlighted area
 - [ ] Optimize scroll
